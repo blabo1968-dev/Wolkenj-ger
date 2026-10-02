@@ -177,13 +177,7 @@ button.secondary {
     font-size: 28px;
     font-weight: bold;
     margin: 15px 0;
-}
-
-.match-info {
-    font-size: 14px;
     color: #4ade80;
-    margin-top: 5px;
-    font-weight: bold;
 }
 
 .list-item {
@@ -243,7 +237,7 @@ input[type=file] {
 <section id="startScreen" class="screen active">
 <div class="container">
 <h1>☁ Wolkenjäger</h1>
-<div class="subtitle">DWD-Referenz-Matching (High-Precision)</div>
+<div class="subtitle">DWD Internationaler Wolkenatlas (CC BY 4.0)</div>
 
 <div class="card">
 <div class="score-box">⭐ Punkte: <span id="startScore">0</span></div>
@@ -255,10 +249,10 @@ input[type=file] {
 </div>
 
 <div id="rulesBox" class="card rules hidden">
-<h2>📖 Regeln &amp; Algorithmus</h2>
+<h2>📖 Regeln &amp; Systematik</h2>
 <br>
-<p>Fotografiere eine Wolke im Freien oder lade ein Himmelsbild hoch[cite: 1].</p>
-<p>Das System prüft das Bild über hochpräzise Farb- und Strukturprofile und blockiert Gesichter, Selfies oder Innenräume automatisch[cite: 1, 2]. Ab **65% Übereinstimmung** wird die passende WMO-Gattung erkannt[cite: 1, 2].</p>
+<p>Fotografiere eine Wolke im Freien oder lade ein Himmelsbild hoch.</p>
+<p>Das System gleicht die Aufnahme direkt mit den 10 klassischen Hauptgattungen des Internationalen Wolkenatlas ab. Es werden bewusst keine Schein-Prozentwerte angezeigt – entweder die Merkmale passen klar zu einer DWD-Gattung oder das Bild wird als ungültig abgewiesen.</p>
 </div>
 
 <div id="impressumBox" class="card impressum hidden">
@@ -303,7 +297,7 @@ input[type=file] {
 <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
 </label>
 
-<div id="databaseStatus" class="database-status">✅ Multi-Faktor Himmelsfilter aktiv</div>
+<div id="databaseStatus" class="database-status">✅ DWD-Atlas Referenzbasis aktiv</div>
 </div>
 
 <!-- ERGEBNIS -->
@@ -311,19 +305,18 @@ input[type=file] {
 <div id="resultIcon" class="cloud-icon">☁️</div>
 <div id="resultName" class="cloud-name">Wolke</div>
 <div id="resultDescription" class="cloud-description"></div>
-<div id="resultMatch" class="match-info"></div>
 <div id="resultPoints" class="points">+0 Punkte</div>
 </div>
 
 <!-- KEINE WOLKE -->
 <div id="noCloudBox" class="card result">
 <div class="cloud-icon">⚠️</div>
-<div class="cloud-name">Kein Himmel / Keine Wolke erkannt</div>
-<div class="cloud-description">Das Bild wurde als Selfie, Gesicht oder Innenraum eingestuft oder weist zu wenig Himmelscharakter auf. Bitte fotografiere den freien Himmel.</div>
+<div class="cloud-name">Keine passende Wolke erkannt</div>
+<div class="cloud-description">Das Motiv entspricht keiner eindeutigen DWD-Wolkengattung (oder zeigt keinen freien Himmel).</div>
 </div>
 
 <button id="retryButton" class="secondary hidden" onclick="prepareNextCloud()">📷 Noch einmal fotografieren</button>
-<button id="nextButton" class="hidden" onclick="prepareNextCloud()">➡️ Nächste Wolke</button>
+<button id="nextButton" class="hidden" onclick="prepareNextCloud()">➡️️ Nächste Wolke</button>
 <button class="secondary" onclick="showScreen('startScreen')">🏠 Zurück zur Startseite</button>
 </div>
 </section>
@@ -345,19 +338,19 @@ input[type=file] {
 
 <script>
 /* =========================================================
-   DWD-WOLKENDATENBANK MIT SCHÄRFEN- UND FARB-PROFILEN
+   DWD WOLKENDATENBANK (INTERNATIONALER WOLKENATLAS)
    ========================================================= */
 const CLOUD_DATABASE = [
-    { id:"cirrus", name:"Cirrus (Ci)", icon:"🌤️", description:"Hohe Federwolke (hohes Stockwerk, über 18000 ft)[cite: 1, 2].", points:25, refBright: 185, refBlue: 0.45, refVar: 30 },
-    { id:"cirrocumulus", name:"Cirrocumulus (Cc)", icon:"☁️", description:"Hohe Schäfchenwolke (hohes Stockwerk, über 18000 ft)[cite: 1, 2].", points:30, refBright: 170, refBlue: 0.40, refVar: 42 },
-    { id:"cirrostratus", name:"Cirrostratus (Cs)", icon:"🌥️", description:"Hohe Schleierwolke (hohes Stockwerk, über 18000 ft)[cite: 1, 2].", points:30, refBright: 195, refBlue: 0.42, refVar: 20 },
-    { id:"altocumulus", name:"Altocumulus (Ac)", icon:"☁️", description:"Grobe Schäfchenwolke (mittleres Stockwerk, 6000 bis 20000 ft)[cite: 1, 2].", points:30, refBright: 160, refBlue: 0.35, refVar: 50 },
-    { id:"altostratus", name:"Altostratus (As)", icon:"🌥️", description:"Mittelhohe Schichtwolke (mittleres Stockwerk, 6000 bis 20000 ft)[cite: 1, 2].", points:35, refBright: 140, refBlue: 0.30, refVar: 25 },
-    { id:"nimbostratus", name:"Nimbostratus (Ns)", icon:"🌧️", description:"Regen-Schichtwolke (ausgedehnte Schlechtwetterwolke)[cite: 1, 2].", points:40, refBright: 85,  refBlue: 0.15, refVar: 22 },
-    { id:"stratocumulus", name:"Stratocumulus (Sc)", icon:"☁️", description:"Schicht-Haufenwolke (tiefes Stockwerk, unter 6000 ft)[cite: 1, 2].", points:20, refBright: 150, refBlue: 0.32, refVar: 45 },
-    { id:"stratus", name:"Stratus (St)", icon:"🌫️", description:"Niedrige Schichtwolke (tiefes Stockwerk, unter 6000 ft)[cite: 1, 2].", points:15, refBright: 165, refBlue: 0.25, refVar: 15 },
-    { id:"cumulus", name:"Cumulus (Cu)", icon:"☁️", description:"Haufenwolke / Schönwetterwolke (tiefes Stockwerk, unter 6000 ft)[cite: 1, 2].", points:10, refBright: 175, refBlue: 0.50, refVar: 55 },
-    { id:"cumulonimbus", name:"Cumulonimbus (Cb)", icon:"⛈️", description:"Schauer- und Gewitterwolke (mit Amboß, bis Tropopause)[cite: 1, 2].", points:50, refBright: 120, refBlue: 0.28, refVar: 65 }
+    { id:"cirrus", name:"Cirrus (Ci)", icon:"🌤️", description:"Hohe Federwolke (hohes Stockwerk).", points:25, minB: 0.35, maxB: 0.60, minVar: 20, maxVar: 45 },
+    { id:"cirrocumulus", name:"Cirrocumulus (Cc)", icon:"☁️", description:"Hohe Schäfchenwolke (hohes Stockwerk).", points:30, minB: 0.32, maxB: 0.55, minVar: 35, maxVar: 60 },
+    { id:"cirrostratus", name:"Cirrostratus (Cs)", icon:"🌥️", description:"Hohe Schleierwolke (hohes Stockwerk).", points:30, minB: 0.38, maxB: 0.65, minVar: 12, maxVar: 30 },
+    { id:"altocumulus", name:"Altocumulus (Ac)", icon:"☁️", description:"Grobe Schäfchenwolke (mittleres Stockwerk).", points:30, minB: 0.28, maxB: 0.48, minVar: 40, maxVar: 70 },
+    { id:"altostratus", name:"Altostratus (As)", icon:"🌥️", description:"Mittelhohe Schichtwolke (mittleres Stockwerk).", points:35, minB: 0.22, maxB: 0.40, minVar: 18, maxVar: 35 },
+    { id:"nimbostratus", name:"Nimbostratus (Ns)", icon:"🌧️", description:"Regen-Schichtwolke (ausgedehnte Schlechtwetterwolke).", points:40, minB: 0.08, maxB: 0.25, minVar: 15, maxVar: 35 },
+    { id:"stratocumulus", name:"Stratocumulus (Sc)", icon:"☁️", description:"Schicht-Haufenwolke (tiefes Stockwerk).", points:20, minB: 0.25, maxB: 0.45, minVar: 38, maxVar: 65 },
+    { id:"stratus", name:"Stratus (St)", icon:"🌫️", description:"Niedrige Schichtwolke / Hochnebel (tiefes Stockwerk).", points:15, minB: 0.20, maxB: 0.38, minVar: 8,  maxVar: 22 },
+    { id:"cumulus", name:"Cumulus (Cu)", icon:"☁️", description:"Haufenwolke / Schönwetterwolke (tiefes Stockwerk).", points:10, minB: 0.40, maxB: 0.70, minVar: 45, maxVar: 85 },
+    { id:"cumulonimbus", name:"Cumulonimbus (Cb)", icon:"⛈️", description:"Gewitterwolke mit Amboss (vertikal mächtig).", points:50, minB: 0.18, maxB: 0.35, minVar: 55, maxVar: 95 }
 ];
 
 let gameData = { score: 0, total: 0, clouds: {} };
@@ -471,7 +464,7 @@ function updateDisplays() {
 }
 
 /* =========================================================
-   HIGH-PRECISION ANTI-SELFIE & REFERENZ-MATCHING
+   DWD-REFERENZ-ABGLEICH (OHNE SCHEIN-PROZENTE)
    ========================================================= */
 function classifyImage(imgElement) {
     const canvas = document.createElement("canvas");
@@ -483,7 +476,7 @@ function classifyImage(imgElement) {
 
     let totalBrightness = 0;
     let blueCount = 0;
-    let skinOrWarmCount = 0;
+    let warmOrDarkCount = 0;
     let variance = 0;
     let pixels = 64 * 64;
     let brightnessValues = [];
@@ -494,61 +487,46 @@ function classifyImage(imgElement) {
         totalBrightness += bright;
         brightnessValues.push(bright);
 
-        // Harten Anti-Selfie / Hautton-Filter:
-        // Gesichter und warme Innenraumbeleuchtungen haben meist starkes Rot/Grün relativ zu Blau.
-        if (r > b + 15 && r > 50 && g > b + 5) {
-            skinOrWarmCount++;
+        // Filter gegen Innenräume, Gesichter, Hauswände, Holz oder Boden (starke Rot/Warm-dominanz)
+        if (r > b + 20 && r > 60) {
+            warmOrDarkCount++;
         }
 
-        // Blauer Himmel Indikator
-        if (b > r + 3 && b > g + 3) {
+        // Himmelsbläue-Anteil
+        if (b > r + 5 && b > g + 5) {
             blueCount++;
         }
     }
 
     let avgBrightness = totalBrightness / pixels;
     let blueRatio = blueCount / pixels;
-    let skinRatio = skinOrWarmCount / pixels;
+    let warmRatio = warmOrDarkCount / pixels;
 
     for (let i = 0; i < brightnessValues.length; i++) {
         variance += Math.pow(brightnessValues[i] - avgBrightness, 2);
     }
     let stdDev = Math.sqrt(variance / pixels);
 
-    // 1. Strenge Vorab-Sperre gegen Selfies, Gesichter und Innenräume
-    if (skinRatio > 0.12) {
-        return null; // Sofortiger Ausschluss bei Hautton-/Warmlicht-Dominanz
-    }
-
-    // 2. Zu dunkel (Nacht / Fehlabdeckung)
-    if (avgBrightness < 35) {
+    // Grundlegender Ausschluss von Nicht-Himmel-Motiven
+    if (warmRatio > 0.15 || avgBrightness < 25) {
         return null;
     }
 
-    let bestMatch = null;
-    let highestMatchPercent = 0;
+    // Exakter Abgleich gegen die DWD-Gattungsparameter
+    let matchedCloud = null;
 
-    // Abgleich gegen alle Referenzprofile
-    CLOUD_DATABASE.forEach(cloud => {
-        let brightDiff = Math.abs(avgBrightness - cloud.refBright);
-        let blueDiff = Math.abs(blueRatio - cloud.refBlue) * 100;
-        let varDiff = Math.abs(stdDev - cloud.refVar);
-
-        let penalty = (brightDiff * 0.4) + (blueDiff * 0.5) + (varDiff * 0.6);
-        let matchPercent = Math.max(0, Math.min(100, Math.round(100 - penalty)));
-
-        if (matchPercent > highestMatchPercent) {
-            highestMatchPercent = matchPercent;
-            bestMatch = { ...cloud, matchPercent: matchPercent };
+    for (let i = 0; i < CLOUD_DATABASE.length; i++) {
+        let cloud = CLOUD_DATABASE[i];
+        if (
+            blueRatio >= cloud.minB && blueRatio <= cloud.maxB &&
+            stdDev >= cloud.minVar && stdDev <= cloud.maxVar
+        ) {
+            matchedCloud = cloud;
+            break; // Eindeutiger Treffer nach DWD-Klassifikation
         }
-    });
-
-    // 65% Mindest-Übereinstimmung erforderlich
-    if (highestMatchPercent < 65) {
-        return null;
     }
 
-    return bestMatch;
+    return matchedCloud;
 }
 
 /* =========================================================
@@ -587,7 +565,7 @@ function handleFile(event) {
 }
 
 function processCapturedImage(imgElement) {
-    document.getElementById("status").textContent = "Führe Referenz-Abgleich &amp; Anti-Selfie-Prüfung durch...";
+    document.getElementById("status").textContent = "Analysiere Wolkenstruktur nach DWD-Atlas...";
     
     setTimeout(() => {
         const matchedCloud = classifyImage(imgElement);
@@ -598,9 +576,8 @@ function processCapturedImage(imgElement) {
 
         if (matchedCloud) {
             document.getElementById("resultIcon").textContent = matchedCloud.icon;
-            document.getElementById("resultName").textContent = matchedCloud.name;
+            document.getElementById("resultName").textContent = "🎯 " + matchedCloud.name + " erkannt";
             document.getElementById("resultDescription").textContent = matchedCloud.description;
-            document.getElementById("resultMatch").textContent = "🎯 Referenz-Übereinstimmung: " + matchedCloud.matchPercent + "%";
             document.getElementById("resultPoints").textContent = "+" + matchedCloud.points + " Punkte";
             
             gameData.score += matchedCloud.points;
