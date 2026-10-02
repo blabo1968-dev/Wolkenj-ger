@@ -87,25 +87,36 @@ button.red {
     margin: 15px 0;
 }
 
+/* =====================================================
+   KAMERAFENSTER
+===================================================== */
+
 .camera-box {
     width: 100%;
+    height: 320px;
     background: #050914;
     border-radius: 16px;
     overflow: hidden;
     margin: 15px 0;
-    min-height: 260px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 video {
     width: 100%;
+    height: 100%;
     display: block;
+    object-fit: cover;
+    transform: scale(1);
+    transform-origin: center center;
 }
 
 .preview {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: none;
 }
 
@@ -200,16 +211,19 @@ label.upload {
 input[type="file"] {
     display: none;
 }
+
 </style>
 </head>
 
 <body>
+
 
 <!-- =====================================================
      SEITE 1 – STARTSEITE
 ===================================================== -->
 
 <section id="startScreen" class="screen active">
+
 <div class="container">
 
     <h1>☁️ Wolkenjäger</h1>
@@ -221,28 +235,38 @@ input[type="file"] {
     <div class="card">
 
         <div class="score-box">
-            ⭐ Punktestand: <strong id="startScore">0</strong>
+            ⭐ Punktestand:
+            <strong id="startScore">0</strong>
         </div>
 
         <button onclick="showScreen('gameScreen')">
             ☁️ Spiel starten
         </button>
 
-        <button class="secondary" onclick="showScreen('cloudsScreen')">
+        <button
+            class="secondary"
+            onclick="showScreen('cloudsScreen')">
             📚 Erkannte Wolken
         </button>
 
-        <button class="secondary" onclick="toggleRules()">
+        <button
+            class="secondary"
+            onclick="toggleRules()">
             📖 Regeln
         </button>
 
-        <button class="secondary" onclick="toggleImpressum()">
+        <button
+            class="secondary"
+            onclick="toggleImpressum()">
             ℹ️ Impressum
         </button>
 
     </div>
 
-    <div id="rulesBox" class="card rules hidden">
+
+    <div
+        id="rulesBox"
+        class="card rules hidden">
 
         <h2>📖 Spielregeln</h2>
 
@@ -278,7 +302,10 @@ input[type="file"] {
 
     </div>
 
-    <div id="impressumBox" class="card impressum hidden">
+
+    <div
+        id="impressumBox"
+        class="card impressum hidden">
 
         <h2>ℹ️ Impressum</h2>
 
@@ -302,11 +329,13 @@ input[type="file"] {
 
     </div>
 
+
     <div class="small">
         Wolkenjäger
     </div>
 
 </div>
+
 </section>
 
 
@@ -315,22 +344,21 @@ input[type="file"] {
 ===================================================== -->
 
 <section id="gameScreen" class="screen">
+
 <div class="container">
 
     <h1>☁️ Nächste Wolke</h1>
 
     <div class="score-box">
-        ⭐ Punkte: <strong id="gameScore">0</strong>
+        ⭐ Punkte:
+        <strong id="gameScore">0</strong>
     </div>
+
 
     <div class="card">
 
         <div class="camera-box">
 
-            <!--
-                muted ergänzt für bessere Kompatibilität
-                mit mobilen Browsern, insbesondere iOS Safari.
-            -->
             <video
                 id="camera"
                 autoplay
@@ -338,35 +366,48 @@ input[type="file"] {
                 playsinline>
             </video>
 
-            <img id="preview" class="preview">
+            <img
+                id="preview"
+                class="preview">
 
         </div>
 
-        <div id="status" class="status">
+
+        <div
+            id="status"
+            class="status">
             Fotografiere eine Wolke am Himmel.
         </div>
 
-        <button id="cameraButton" onclick="takePhoto()">
+
+        <button
+            id="cameraButton"
+            onclick="takePhoto()">
             📷 Wolke fotografieren
         </button>
 
-        <label class="upload" for="fileInput">
+
+        <label
+            class="upload"
+            for="fileInput">
             🖼️ Foto auswählen
         </label>
+
 
         <input
             id="fileInput"
             type="file"
             accept="image/*"
-            onchange="handleFile(event)"
-        >
+            onchange="handleFile(event)">
 
     </div>
 
 
     <!-- ANALYSE -->
 
-    <div id="analysisBox" class="card hidden">
+    <div
+        id="analysisBox"
+        class="card hidden">
 
         <div class="loading">
             🔎 Wolke wird erkannt ...
@@ -377,47 +418,65 @@ input[type="file"] {
 
     <!-- ERGEBNIS -->
 
-    <div id="resultBox" class="card result">
+    <div
+        id="resultBox"
+        class="card result">
 
-        <div class="cloud-icon" id="resultIcon">
+        <div
+            class="cloud-icon"
+            id="resultIcon">
             ☁️
         </div>
 
-        <div class="cloud-name" id="resultName">
+
+        <div
+            class="cloud-name"
+            id="resultName">
             Cumulus
         </div>
 
-        <div class="cloud-description" id="resultDescription">
+
+        <div
+            class="cloud-description"
+            id="resultDescription">
             Haufenwolke
         </div>
 
+
         <div class="points">
-            +<span id="resultPoints">10</span> Punkte
+            +<span id="resultPoints">10</span>
+            Punkte
         </div>
+
 
         <button onclick="prepareNextCloud()">
             📷 Noch einmal fotografieren
         </button>
 
+
         <button onclick="prepareNextCloud()">
             ➡️ Nächste Wolke
         </button>
 
-        <button class="secondary" onclick="showScreen('startScreen')">
+
+        <button
+            class="secondary"
+            onclick="showScreen('startScreen')">
             🏠 Zurück zur Startseite
         </button>
 
     </div>
 
+
     <button
         id="backGameButton"
         class="secondary"
-        onclick="showScreen('startScreen')"
-    >
+        onclick="showScreen('startScreen')">
         🏠 Zurück zur Startseite
     </button>
 
 </div>
+
 </section>
 
 
@@ -426,9 +485,11 @@ input[type="file"] {
 ===================================================== -->
 
 <section id="cloudsScreen" class="screen">
+
 <div class="container">
 
     <h1>📚 Erkannte Wolken</h1>
+
 
     <div class="card">
 
@@ -437,12 +498,14 @@ input[type="file"] {
             <strong id="cloudScore">0</strong>
         </div>
 
+
         <div class="score-box">
             ☁️ Erkannte Wolken:
             <strong id="totalClouds">0</strong>
         </div>
 
     </div>
+
 
     <div class="card">
 
@@ -456,11 +519,15 @@ input[type="file"] {
 
     </div>
 
-    <button class="secondary" onclick="showScreen('startScreen')">
+
+    <button
+        class="secondary"
+        onclick="showScreen('startScreen')">
         🏠 Zurück zur Startseite
     </button>
 
 </div>
+
 </section>
 
 
@@ -603,7 +670,10 @@ function saveGame() {
 function loadGame() {
 
     const saved =
-        localStorage.getItem("wolkenjaeger_spielstand");
+        localStorage.getItem(
+            "wolkenjaeger_spielstand"
+        );
+
 
     if (saved) {
 
@@ -624,6 +694,7 @@ function loadGame() {
 
     }
 
+
     updateAllDisplays();
 
 }
@@ -635,17 +706,29 @@ function loadGame() {
 
 function updateAllDisplays() {
 
-    document.getElementById("startScore").textContent =
+    document.getElementById(
+        "startScore"
+    ).textContent =
         gameData.score;
 
-    document.getElementById("gameScore").textContent =
+
+    document.getElementById(
+        "gameScore"
+    ).textContent =
         gameData.score;
 
-    document.getElementById("cloudScore").textContent =
+
+    document.getElementById(
+        "cloudScore"
+    ).textContent =
         gameData.score;
 
-    document.getElementById("totalClouds").textContent =
+
+    document.getElementById(
+        "totalClouds"
+    ).textContent =
         gameData.totalClouds;
+
 
     updateCloudList();
 
@@ -659,47 +742,59 @@ function updateAllDisplays() {
 function updateCloudList() {
 
     const list =
-        document.getElementById("cloudList");
+        document.getElementById(
+            "cloudList"
+        );
+
 
     list.innerHTML = "";
+
 
     let found = false;
 
 
-    CLOUD_DATABASE.forEach(cloud => {
+    CLOUD_DATABASE.forEach(
+        cloud => {
 
-        const count =
-            gameData.clouds[cloud.name] || 0;
-
-
-        if (count > 0) {
-
-            found = true;
+            const count =
+                gameData.clouds[
+                    cloud.name
+                ] || 0;
 
 
-            const item =
-                document.createElement("div");
+            if (count > 0) {
 
-            item.className =
-                "list-item";
+                found = true;
 
 
-            item.innerHTML = `
-                <span>
-                    ${cloud.icon} ${cloud.name}
-                </span>
-
-                <strong>
-                    ${count}×
-                </strong>
-            `;
+                const item =
+                    document.createElement(
+                        "div"
+                    );
 
 
-            list.appendChild(item);
+                item.className =
+                    "list-item";
+
+
+                item.innerHTML = `
+                    <span>
+                        ${cloud.icon}
+                        ${cloud.name}
+                    </span>
+
+                    <strong>
+                        ${count}×
+                    </strong>
+                `;
+
+
+                list.appendChild(item);
+
+            }
 
         }
-
-    });
+    );
 
 
     if (!found) {
@@ -718,22 +813,32 @@ function updateCloudList() {
 
 function showScreen(screenId) {
 
-    document.querySelectorAll(".screen")
-        .forEach(screen => {
+    document.querySelectorAll(
+        ".screen"
+    ).forEach(
+        screen => {
 
-            screen.classList.remove("active");
+            screen.classList.remove(
+                "active"
+            );
 
-        });
+        }
+    );
 
 
-    document.getElementById(screenId)
-        .classList.add("active");
+    document.getElementById(
+        screenId
+    ).classList.add(
+        "active"
+    );
 
 
     updateAllDisplays();
 
 
-    if (screenId === "gameScreen") {
+    if (
+        screenId === "gameScreen"
+    ) {
 
         startCamera();
 
@@ -753,9 +858,14 @@ function showScreen(screenId) {
 function toggleRules() {
 
     const box =
-        document.getElementById("rulesBox");
+        document.getElementById(
+            "rulesBox"
+        );
 
-    box.classList.toggle("hidden");
+
+    box.classList.toggle(
+        "hidden"
+    );
 
 }
 
@@ -767,9 +877,14 @@ function toggleRules() {
 function toggleImpressum() {
 
     const box =
-        document.getElementById("impressumBox");
+        document.getElementById(
+            "impressumBox"
+        );
 
-    box.classList.toggle("hidden");
+
+    box.classList.toggle(
+        "hidden"
+    );
 
 }
 
@@ -784,7 +899,9 @@ let cameraStream = null;
 async function startCamera() {
 
     const video =
-        document.getElementById("camera");
+        document.getElementById(
+            "camera"
+        );
 
 
     try {
@@ -801,7 +918,9 @@ async function startCamera() {
             !navigator.mediaDevices.getUserMedia
         ) {
 
-            document.getElementById("status").textContent =
+            document.getElementById(
+                "status"
+            ).textContent =
                 "Die Kamera wird von diesem Browser nicht unterstützt.";
 
             return;
@@ -827,14 +946,17 @@ async function startCamera() {
             cameraStream;
 
 
-        /*
-         * Zusätzliche Absicherung für
-         * mobile Browser.
-         */
-
         video.muted = true;
-        video.setAttribute("muted", "");
-        video.setAttribute("playsinline", "");
+
+        video.setAttribute(
+            "muted",
+            ""
+        );
+
+        video.setAttribute(
+            "playsinline",
+            ""
+        );
 
 
         try {
@@ -843,17 +965,14 @@ async function startCamera() {
 
         } catch (error) {
 
-            /*
-             * Einige Browser starten den Stream
-             * erst nach einer Benutzeraktion.
-             */
-
         }
 
 
     } catch (error) {
 
-        document.getElementById("status").textContent =
+        document.getElementById(
+            "status"
+        ).textContent =
             "Kamera konnte nicht gestartet werden. Du kannst ein Foto auswählen.";
 
     }
@@ -871,11 +990,13 @@ function stopCamera() {
 
         cameraStream
             .getTracks()
-            .forEach(track => {
+            .forEach(
+                track => {
 
-                track.stop();
+                    track.stop();
 
-            });
+                }
+            );
 
 
         cameraStream = null;
@@ -892,12 +1013,16 @@ function stopCamera() {
 function takePhoto() {
 
     const video =
-        document.getElementById("camera");
+        document.getElementById(
+            "camera"
+        );
 
 
     if (!video.videoWidth) {
 
-        document.getElementById("status").textContent =
+        document.getElementById(
+            "status"
+        ).textContent =
             "Kamera ist noch nicht bereit.";
 
         return;
@@ -906,18 +1031,23 @@ function takePhoto() {
 
 
     const canvas =
-        document.createElement("canvas");
+        document.createElement(
+            "canvas"
+        );
 
 
     canvas.width =
         video.videoWidth;
+
 
     canvas.height =
         video.videoHeight;
 
 
     const ctx =
-        canvas.getContext("2d");
+        canvas.getContext(
+            "2d"
+        );
 
 
     ctx.drawImage(
@@ -936,7 +1066,9 @@ function takePhoto() {
         );
 
 
-    analysePhoto(imageData);
+    analysePhoto(
+        imageData
+    );
 
 }
 
@@ -972,7 +1104,9 @@ function handleFile(event) {
         };
 
 
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(
+        file
+    );
 
 }
 
@@ -984,22 +1118,39 @@ function handleFile(event) {
 function analysePhoto(imageData) {
 
     const preview =
-        document.getElementById("preview");
+        document.getElementById(
+            "preview"
+        );
+
 
     const video =
-        document.getElementById("camera");
+        document.getElementById(
+            "camera"
+        );
+
 
     const analysisBox =
-        document.getElementById("analysisBox");
+        document.getElementById(
+            "analysisBox"
+        );
+
 
     const resultBox =
-        document.getElementById("resultBox");
+        document.getElementById(
+            "resultBox"
+        );
+
 
     const cameraButton =
-        document.getElementById("cameraButton");
+        document.getElementById(
+            "cameraButton"
+        );
+
 
     const backButton =
-        document.getElementById("backGameButton");
+        document.getElementById(
+            "backGameButton"
+        );
 
 
     video.style.display =
@@ -1037,13 +1188,16 @@ function analysePhoto(imageData) {
         "";
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        analyseImagePixels(
-            imageData
-        );
+            analyseImagePixels(
+                imageData
+            );
 
-    }, 500);
+        },
+        500
+    );
 
 }
 
@@ -1052,7 +1206,9 @@ function analysePhoto(imageData) {
    BILDMERKMALE ERMITTELN
 ===================================================== */
 
-function analyseImagePixels(imageData) {
+function analyseImagePixels(
+    imageData
+) {
 
     const image =
         new Image();
@@ -1062,7 +1218,9 @@ function analyseImagePixels(imageData) {
         function() {
 
             const canvas =
-                document.createElement("canvas");
+                document.createElement(
+                    "canvas"
+                );
 
 
             const width = 120;
@@ -1071,7 +1229,10 @@ function analyseImagePixels(imageData) {
             const height =
                 Math.round(
                     image.height *
-                    (width / image.width)
+                    (
+                        width /
+                        image.width
+                    )
                 );
 
 
@@ -1084,7 +1245,9 @@ function analyseImagePixels(imageData) {
 
 
             const ctx =
-                canvas.getContext("2d");
+                canvas.getContext(
+                    "2d"
+                );
 
 
             ctx.drawImage(
@@ -1106,7 +1269,9 @@ function analyseImagePixels(imageData) {
 
 
             let totalBrightness = 0;
+
             let bluePixels = 0;
+
             let whitePixels = 0;
 
             let brightnessValues = [];
@@ -1193,16 +1358,20 @@ function analyseImagePixels(imageData) {
             let variance = 0;
 
 
-            brightnessValues.forEach(value => {
+            brightnessValues.forEach(
+                value => {
 
-                variance +=
-                    Math.pow(
-                        (value / 255) -
-                        averageBrightness,
-                        2
-                    );
+                    variance +=
+                        Math.pow(
+                            (
+                                value / 255
+                            ) -
+                            averageBrightness,
+                            2
+                        );
 
-            });
+                }
+            );
 
 
             variance =
@@ -1213,13 +1382,13 @@ function analyseImagePixels(imageData) {
             const contrast =
                 Math.min(
                     1,
-                    Math.sqrt(variance) * 3
+                    Math.sqrt(
+                        variance
+                    ) * 3
                 );
 
 
-            /*
-             * Einfache Kantenerkennung.
-             */
+            /* Kantenerkennung */
 
             for (
                 let y = 1;
@@ -1241,7 +1410,8 @@ function analyseImagePixels(imageData) {
 
                     const previous =
                         brightnessValues[
-                            y * width + (x - 1)
+                            y * width +
+                            (x - 1)
                         ] / 255;
 
 
@@ -1308,74 +1478,76 @@ function analyseImagePixels(imageData) {
    PASSENDSTE WOLKE FINDEN
 ===================================================== */
 
-function findBestCloud(features) {
+function findBestCloud(
+    features
+) {
 
-    let bestCloud =
-        null;
-
+    let bestCloud = null;
 
     let bestDistance =
         Infinity;
 
 
-    CLOUD_DATABASE.forEach(cloud => {
+    CLOUD_DATABASE.forEach(
+        cloud => {
 
-        const distance =
+            const distance =
 
-            Math.pow(
-                features.white -
-                cloud.white,
-                2
-            ) * 1.2
+                Math.pow(
+                    features.white -
+                    cloud.white,
+                    2
+                ) * 1.2
 
-            +
+                +
 
-            Math.pow(
-                features.blue -
-                cloud.blue,
-                2
-            ) * 1.0
+                Math.pow(
+                    features.blue -
+                    cloud.blue,
+                    2
+                ) * 1.0
 
-            +
+                +
 
-            Math.pow(
-                features.brightness -
-                cloud.brightness,
-                2
-            ) * 1.3
+                Math.pow(
+                    features.brightness -
+                    cloud.brightness,
+                    2
+                ) * 1.3
 
-            +
+                +
 
-            Math.pow(
-                features.contrast -
-                cloud.contrast,
-                2
-            ) * 1.5
+                Math.pow(
+                    features.contrast -
+                    cloud.contrast,
+                    2
+                ) * 1.5
 
-            +
+                +
 
-            Math.pow(
-                features.edge -
-                cloud.edge,
-                2
-            ) * 1.5;
-
-
-        if (
-            distance <
-            bestDistance
-        ) {
-
-            bestDistance =
-                distance;
+                Math.pow(
+                    features.edge -
+                    cloud.edge,
+                    2
+                ) * 1.5;
 
 
-            bestCloud =
-                cloud;
+            if (
+                distance <
+                bestDistance
+            ) {
+
+                bestDistance =
+                    distance;
+
+
+                bestCloud =
+                    cloud;
+
+            }
 
         }
-
-    });
+    );
 
 
     return bestCloud;
@@ -1394,13 +1566,10 @@ function finishAnalysis(
 
     document.getElementById(
         "analysisBox"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
-
-    /*
-     * Sehr dunkle oder ungeeignete
-     * Fotos werden nicht gewertet.
-     */
 
     const unsuitable =
         features.brightness < 0.12 ||
@@ -1418,10 +1587,6 @@ function finishAnalysis(
 
     }
 
-
-    /*
-     * Erfolgreiche Erkennung
-     */
 
     gameData.score +=
         cloud.points;
@@ -1524,8 +1689,7 @@ function showNoCloud() {
 
         <button
             class="secondary"
-            onclick="showScreen('startScreen')"
-        >
+            onclick="showScreen('startScreen')">
             🏠 Zurück zur Startseite
         </button>
 
@@ -1545,22 +1709,39 @@ function showNoCloud() {
 function prepareNextCloud() {
 
     const video =
-        document.getElementById("camera");
+        document.getElementById(
+            "camera"
+        );
+
 
     const preview =
-        document.getElementById("preview");
+        document.getElementById(
+            "preview"
+        );
+
 
     const analysisBox =
-        document.getElementById("analysisBox");
+        document.getElementById(
+            "analysisBox"
+        );
+
 
     const resultBox =
-        document.getElementById("resultBox");
+        document.getElementById(
+            "resultBox"
+        );
+
 
     const cameraButton =
-        document.getElementById("cameraButton");
+        document.getElementById(
+            "cameraButton"
+        );
+
 
     const backButton =
-        document.getElementById("backGameButton");
+        document.getElementById(
+            "backGameButton"
+        );
 
 
     resultBox.style.display =
