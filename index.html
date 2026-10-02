@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Wolkenjäger – Blankenhagen Spieleentwicklung</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b1329;
+    color: white;
+    min-height: 100vh;
+}
+
+.screen {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.screen.active {
+    display: block;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 34px;
+    margin: 20px 0 5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #b8c4dc;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: #101d3f;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+button {
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #0055a4;
+    color: white;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button.secondary {
+    background: #26385f;
+}
+
+button.red {
+    background: #ef4135;
+}
+
+.score-box {
+    text-align: center;
+    font-size: 20px;
+    margin: 15px 0;
+}
+
+.camera-box {
+    width: 100%;
+    background: #050914;
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 15px 0;
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+video {
+    width: 100%;
+    display: block;
+}
+
+.preview {
+    width: 100%;
+    display: none;
+}
+
+.status {
+    text-align: center;
+    min-height: 28px;
+    margin: 12px 0;
+    color: #cbd5e1;
+}
+
+.result {
+    display: none;
+    text-align: center;
+}
+
+.cloud-icon {
+    font-size: 65px;
+    margin-bottom: 10px;
+}
+
+.cloud-name {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.cloud-description {
+    color: #cbd5e1;
+    font-size: 17px;
+    margin-bottom: 15px;
+}
+
+.points {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.list-item {
+    background: #162653;
+    padding: 14px;
+    margin: 8px 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rules p,
+.impressum p {
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.small {
+    color: #9eacc8;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 18px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.loading {
+    font-size: 18px;
+    text-align: center;
+    padding: 20px;
+}
+
+.notice {
+    background: #17264b;
+    border-left: 4px solid #4d8edb;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    line-height: 1.4;
+}
+
+label.upload {
+    display: block;
+    text-align: center;
+    background: #26385f;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     SEITE 1 – STARTSEITE
+===================================================== -->
+
+<section id="startScreen" class="screen active">
+<div class="container">
+
+    <h1>☁️ Wolkenjäger</h1>
+
+    <div class="subtitle">
+        Blankenhagen Spieleentwicklung
+    </div>
+
+    <div class="card">
+
+        <div class="score-box">
+            ⭐ Punktestand: <strong id="startScore">0</strong>
+        </div>
+
+        <button onclick="showScreen('gameScreen')">
+            ☁️ Spiel starten
+        </button>
+
+        <button class="secondary" onclick="showScreen('cloudsScreen')">
+            📚 Erkannte Wolken
+        </button>
+
+        <button class="secondary" onclick="toggleRules()">
+            📖 Regeln
+        </button>
+
+        <button class="secondary" onclick="toggleImpressum()">
+            ℹ️ Impressum
+        </button>
+
+    </div>
+
+    <div id="rulesBox" class="card rules hidden">
+
+        <h2>📖 Spielregeln</h2>
+
+        <br>
+
+        <p>
+            1. Fotografiere eine Wolke am Himmel.
+        </p>
+
+        <p>
+            2. Das Spiel untersucht das Foto und versucht,
+            die Wolkenart zu erkennen.
+        </p>
+
+        <p>
+            3. Wird eine Wolkenart erkannt, erhältst du Punkte.
+        </p>
+
+        <p>
+            4. Jede erfolgreich erkannte Wolke wird in deiner
+            Wolken-Sammlung gespeichert.
+        </p>
+
+        <p>
+            5. Bei einem ungeeigneten Foto gibt es keine Punkte.
+            Du kannst einfach erneut fotografieren.
+        </p>
+
+        <p>
+            6. Das Spiel ist ein Spiel und keine wissenschaftliche
+            Wetterbestimmung.
+        </p>
+
+    </div>
+
+    <div id="impressumBox" class="card impressum hidden">
+
+        <h2>ℹ️ Impressum</h2>
+
+        <br>
+
+        <p>
+            <strong>Blankenhagen Spieleentwicklung</strong>
+        </p>
+
+        <p>
+            Jörg Blankenhagen
+        </p>
+
+        <p>
+            73614 Schorndorf
+        </p>
+
+        <p>
+            spieleentwicklung@freenet.de
+        </p>
+
+    </div>
+
+    <div class="small">
+        Wolkenjäger
+    </div>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     SEITE 2 – SPIEL / FOTOGRAFIEREN
+===================================================== -->
+
+<section id="gameScreen" class="screen">
+<div class="container">
+
+    <h1>☁️ Nächste Wolke</h1>
+
+    <div class="score-box">
+        ⭐ Punkte: <strong id="gameScore">0</strong>
+    </div>
+
+    <div class="card">
+
+        <div class="camera-box">
+
+            <!--
+                muted ergänzt für bessere Kompatibilität
+                mit mobilen Browsern, insbesondere iOS Safari.
+            -->
+            <video
+                id="camera"
+                autoplay
+                muted
+                playsinline>
+            </video>
+
+            <img id="preview" class="preview">
+
+        </div>
+
+        <div id="status" class="status">
+            Fotografiere eine Wolke am Himmel.
+        </div>
+
+        <button id="cameraButton" onclick="takePhoto()">
+            📷 Wolke fotografieren
+        </button>
+
+        <label class="upload" for="fileInput">
+            🖼️ Foto auswählen
+        </label>
+
+        <input
+            id="fileInput"
+            type="file"
+            accept="image/*"
+            onchange="handleFile(event)"
+        >
+
+    </div>
+
+
+    <!-- ANALYSE -->
+
+    <div id="analysisBox" class="card hidden">
+
+        <div class="loading">
+            🔎 Wolke wird erkannt ...
+        </div>
+
+    </div>
+
+
+    <!-- ERGEBNIS -->
+
+    <div id="resultBox" class="card result">
+
+        <div class="cloud-icon" id="resultIcon">
+            ☁️
+        </div>
+
+        <div class="cloud-name" id="resultName">
+            Cumulus
+        </div>
+
+        <div class="cloud-description" id="resultDescription">
+            Haufenwolke
+        </div>
+
+        <div class="points">
+            +<span id="resultPoints">10</span> Punkte
+        </div>
+
+        <button onclick="prepareNextCloud()">
+            📷 Noch einmal fotografieren
+        </button>
+
+        <button onclick="prepareNextCloud()">
+            ➡️ Nächste Wolke
+        </button>
+
+        <button class="secondary" onclick="showScreen('startScreen')">
+            🏠 Zurück zur Startseite
+        </button>
+
+    </div>
+
+    <button
+        id="backGameButton"
+        class="secondary"
+        onclick="showScreen('startScreen')"
+    >
+        🏠 Zurück zur Startseite
+    </button>
+
+</div>
+</section>
+
+
+<!-- =====================================================
+     SEITE 3 – ERKANNTE WOLKEN
+===================================================== -->
+
+<section id="cloudsScreen" class="screen">
+<div class="container">
+
+    <h1>📚 Erkannte Wolken</h1>
+
+    <div class="card">
+
+        <div class="score-box">
+            ⭐ Gesamtpunktestand:
+            <strong id="cloudScore">0</strong>
+        </div>
+
+        <div class="score-box">
+            ☁️ Erkannte Wolken:
+            <strong id="totalClouds">0</strong>
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Meine Wolken</h2>
+
+        <br>
+
+        <div id="cloudList">
+            Noch keine Wolken erkannt.
+        </div>
+
+    </div>
+
+    <button class="secondary" onclick="showScreen('startScreen')">
+        🏠 Zurück zur Startseite
+    </button>
+
+</div>
+</section>
+
+
+<script>
+
+/* =====================================================
+   WOLKENDATENBANK
+===================================================== */
+
+const CLOUD_DATABASE = [
+
+    {
+        name: "Cumulus",
+        icon: "☁️",
+        description: "Haufenwolke",
+        points: 10,
+        white: 0.72,
+        blue: 0.18,
+        brightness: 0.72,
+        contrast: 0.32,
+        edge: 0.28
+    },
+
+    {
+        name: "Stratus",
+        icon: "🌫️",
+        description: "Flache, gleichmäßige Wolkendecke",
+        points: 10,
+        white: 0.60,
+        blue: 0.15,
+        brightness: 0.55,
+        contrast: 0.12,
+        edge: 0.10
+    },
+
+    {
+        name: "Stratocumulus",
+        icon: "🌥️",
+        description: "Großflächige Wolkenfelder",
+        points: 12,
+        white: 0.66,
+        blue: 0.16,
+        brightness: 0.62,
+        contrast: 0.24,
+        edge: 0.22
+    },
+
+    {
+        name: "Cirrus",
+        icon: "🪶",
+        description: "Dünne, faserige Federwolke",
+        points: 15,
+        white: 0.38,
+        blue: 0.36,
+        brightness: 0.66,
+        contrast: 0.25,
+        edge: 0.35
+    },
+
+    {
+        name: "Altocumulus",
+        icon: "☁️",
+        description: "Viele kleinere Wolkenfelder",
+        points: 15,
+        white: 0.58,
+        blue: 0.20,
+        brightness: 0.64,
+        contrast: 0.35,
+        edge: 0.38
+    },
+
+    {
+        name: "Altostratus",
+        icon: "🌥️",
+        description: "Mittelhohe, ausgedehnte Wolkenschicht",
+        points: 15,
+        white: 0.52,
+        blue: 0.17,
+        brightness: 0.52,
+        contrast: 0.18,
+        edge: 0.14
+    },
+
+    {
+        name: "Nimbostratus",
+        icon: "🌧️",
+        description: "Dunkle, ausgedehnte Regenwolke",
+        points: 20,
+        white: 0.38,
+        blue: 0.08,
+        brightness: 0.34,
+        contrast: 0.18,
+        edge: 0.16
+    },
+
+    {
+        name: "Cumulonimbus",
+        icon: "⛈️",
+        description: "Mächtige Gewitterwolke",
+        points: 25,
+        white: 0.62,
+        blue: 0.10,
+        brightness: 0.58,
+        contrast: 0.48,
+        edge: 0.52
+    }
+
+];
+
+
+/* =====================================================
+   SPIELDATEN
+===================================================== */
+
+let gameData = {
+    score: 0,
+    totalClouds: 0,
+    clouds: {}
+};
+
+
+/* =====================================================
+   SPIELSTAND SPEICHERN
+===================================================== */
+
+function saveGame() {
+
+    localStorage.setItem(
+        "wolkenjaeger_spielstand",
+        JSON.stringify(gameData)
+    );
+
+}
+
+
+/* =====================================================
+   SPIELSTAND LADEN
+===================================================== */
+
+function loadGame() {
+
+    const saved =
+        localStorage.getItem("wolkenjaeger_spielstand");
+
+    if (saved) {
+
+        try {
+
+            gameData =
+                JSON.parse(saved);
+
+        } catch (error) {
+
+            gameData = {
+                score: 0,
+                totalClouds: 0,
+                clouds: {}
+            };
+
+        }
+
+    }
+
+    updateAllDisplays();
+
+}
+
+
+/* =====================================================
+   ALLE ANZEIGEN AKTUALISIEREN
+===================================================== */
+
+function updateAllDisplays() {
+
+    document.getElementById("startScore").textContent =
+        gameData.score;
+
+    document.getElementById("gameScore").textContent =
+        gameData.score;
+
+    document.getElementById("cloudScore").textContent =
+        gameData.score;
+
+    document.getElementById("totalClouds").textContent =
+        gameData.totalClouds;
+
+    updateCloudList();
+
+}
+
+
+/* =====================================================
+   WOLKENLISTE
+===================================================== */
+
+function updateCloudList() {
+
+    const list =
+        document.getElementById("cloudList");
+
+    list.innerHTML = "";
+
+    let found = false;
+
+
+    CLOUD_DATABASE.forEach(cloud => {
+
+        const count =
+            gameData.clouds[cloud.name] || 0;
+
+
+        if (count > 0) {
+
+            found = true;
+
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "list-item";
+
+
+            item.innerHTML = `
+                <span>
+                    ${cloud.icon} ${cloud.name}
+                </span>
+
+                <strong>
+                    ${count}×
+                </strong>
+            `;
+
+
+            list.appendChild(item);
+
+        }
+
+    });
+
+
+    if (!found) {
+
+        list.innerHTML =
+            "Noch keine Wolken erkannt.";
+
+    }
+
+}
+
+
+/* =====================================================
+   SEITENWECHSEL
+===================================================== */
+
+function showScreen(screenId) {
+
+    document.querySelectorAll(".screen")
+        .forEach(screen => {
+
+            screen.classList.remove("active");
+
+        });
+
+
+    document.getElementById(screenId)
+        .classList.add("active");
+
+
+    updateAllDisplays();
+
+
+    if (screenId === "gameScreen") {
+
+        startCamera();
+
+    } else {
+
+        stopCamera();
+
+    }
+
+}
+
+
+/* =====================================================
+   REGELN
+===================================================== */
+
+function toggleRules() {
+
+    const box =
+        document.getElementById("rulesBox");
+
+    box.classList.toggle("hidden");
+
+}
+
+
+/* =====================================================
+   IMPRESSUM
+===================================================== */
+
+function toggleImpressum() {
+
+    const box =
+        document.getElementById("impressumBox");
+
+    box.classList.toggle("hidden");
+
+}
+
+
+/* =====================================================
+   KAMERA
+===================================================== */
+
+let cameraStream = null;
+
+
+async function startCamera() {
+
+    const video =
+        document.getElementById("camera");
+
+
+    try {
+
+        if (cameraStream) {
+
+            return;
+
+        }
+
+
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
+
+            document.getElementById("status").textContent =
+                "Die Kamera wird von diesem Browser nicht unterstützt.";
+
+            return;
+
+        }
+
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+                    facingMode: {
+                        ideal: "environment"
+                    }
+                },
+
+                audio: false
+
+            });
+
+
+        video.srcObject =
+            cameraStream;
+
+
+        /*
+         * Zusätzliche Absicherung für
+         * mobile Browser.
+         */
+
+        video.muted = true;
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+
+
+        try {
+
+            await video.play();
+
+        } catch (error) {
+
+            /*
+             * Einige Browser starten den Stream
+             * erst nach einer Benutzeraktion.
+             */
+
+        }
+
+
+    } catch (error) {
+
+        document.getElementById("status").textContent =
+            "Kamera konnte nicht gestartet werden. Du kannst ein Foto auswählen.";
+
+    }
+
+}
+
+
+/* =====================================================
+   KAMERA STOPPEN
+===================================================== */
+
+function stopCamera() {
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(track => {
+
+                track.stop();
+
+            });
+
+
+        cameraStream = null;
+
+    }
+
+}
+
+
+/* =====================================================
+   FOTO AUFNEHMEN
+===================================================== */
+
+function takePhoto() {
+
+    const video =
+        document.getElementById("camera");
+
+
+    if (!video.videoWidth) {
+
+        document.getElementById("status").textContent =
+            "Kamera ist noch nicht bereit.";
+
+        return;
+
+    }
+
+
+    const canvas =
+        document.createElement("canvas");
+
+
+    canvas.width =
+        video.videoWidth;
+
+    canvas.height =
+        video.videoHeight;
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    const imageData =
+        canvas.toDataURL(
+            "image/jpeg",
+            0.85
+        );
+
+
+    analysePhoto(imageData);
+
+}
+
+
+/* =====================================================
+   FOTO AUS DATEI
+===================================================== */
+
+function handleFile(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e) {
+
+            analysePhoto(
+                e.target.result
+            );
+
+        };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* =====================================================
+   FOTO ANALYSIEREN
+===================================================== */
+
+function analysePhoto(imageData) {
+
+    const preview =
+        document.getElementById("preview");
+
+    const video =
+        document.getElementById("camera");
+
+    const analysisBox =
+        document.getElementById("analysisBox");
+
+    const resultBox =
+        document.getElementById("resultBox");
+
+    const cameraButton =
+        document.getElementById("cameraButton");
+
+    const backButton =
+        document.getElementById("backGameButton");
+
+
+    video.style.display =
+        "none";
+
+
+    preview.src =
+        imageData;
+
+
+    preview.style.display =
+        "block";
+
+
+    cameraButton.style.display =
+        "none";
+
+
+    backButton.style.display =
+        "none";
+
+
+    analysisBox.classList.remove(
+        "hidden"
+    );
+
+
+    resultBox.style.display =
+        "none";
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "";
+
+
+    setTimeout(() => {
+
+        analyseImagePixels(
+            imageData
+        );
+
+    }, 500);
+
+}
+
+
+/* =====================================================
+   BILDMERKMALE ERMITTELN
+===================================================== */
+
+function analyseImagePixels(imageData) {
+
+    const image =
+        new Image();
+
+
+    image.onload =
+        function() {
+
+            const canvas =
+                document.createElement("canvas");
+
+
+            const width = 120;
+
+
+            const height =
+                Math.round(
+                    image.height *
+                    (width / image.width)
+                );
+
+
+            canvas.width =
+                width;
+
+
+            canvas.height =
+                height;
+
+
+            const ctx =
+                canvas.getContext("2d");
+
+
+            ctx.drawImage(
+                image,
+                0,
+                0,
+                width,
+                height
+            );
+
+
+            const pixels =
+                ctx.getImageData(
+                    0,
+                    0,
+                    width,
+                    height
+                ).data;
+
+
+            let totalBrightness = 0;
+            let bluePixels = 0;
+            let whitePixels = 0;
+
+            let brightnessValues = [];
+
+            let edgeStrength = 0;
+
+
+            for (
+                let i = 0;
+                i < pixels.length;
+                i += 4
+            ) {
+
+                const r =
+                    pixels[i];
+
+                const g =
+                    pixels[i + 1];
+
+                const b =
+                    pixels[i + 2];
+
+
+                const brightness =
+                    (
+                        r +
+                        g +
+                        b
+                    ) / 3;
+
+
+                totalBrightness +=
+                    brightness;
+
+
+                brightnessValues.push(
+                    brightness
+                );
+
+
+                if (
+                    b > r * 1.12 &&
+                    b > g * 1.05
+                ) {
+
+                    bluePixels++;
+
+                }
+
+
+                if (
+                    r > 185 &&
+                    g > 185 &&
+                    b > 185
+                ) {
+
+                    whitePixels++;
+
+                }
+
+            }
+
+
+            const count =
+                pixels.length / 4;
+
+
+            const averageBrightness =
+                totalBrightness /
+                count /
+                255;
+
+
+            const blue =
+                bluePixels /
+                count;
+
+
+            const white =
+                whitePixels /
+                count;
+
+
+            let variance = 0;
+
+
+            brightnessValues.forEach(value => {
+
+                variance +=
+                    Math.pow(
+                        (value / 255) -
+                        averageBrightness,
+                        2
+                    );
+
+            });
+
+
+            variance =
+                variance /
+                brightnessValues.length;
+
+
+            const contrast =
+                Math.min(
+                    1,
+                    Math.sqrt(variance) * 3
+                );
+
+
+            /*
+             * Einfache Kantenerkennung.
+             */
+
+            for (
+                let y = 1;
+                y < height;
+                y++
+            ) {
+
+                for (
+                    let x = 1;
+                    x < width;
+                    x++
+                ) {
+
+                    const current =
+                        brightnessValues[
+                            y * width + x
+                        ] / 255;
+
+
+                    const previous =
+                        brightnessValues[
+                            y * width + (x - 1)
+                        ] / 255;
+
+
+                    edgeStrength +=
+                        Math.abs(
+                            current -
+                            previous
+                        );
+
+                }
+
+            }
+
+
+            edgeStrength =
+                edgeStrength /
+                (width * height);
+
+
+            const features = {
+
+                white:
+                    white,
+
+                blue:
+                    blue,
+
+                brightness:
+                    averageBrightness,
+
+                contrast:
+                    contrast,
+
+                edge:
+                    Math.min(
+                        1,
+                        edgeStrength * 5
+                    )
+
+            };
+
+
+            const cloud =
+                findBestCloud(
+                    features
+                );
+
+
+            finishAnalysis(
+                cloud,
+                features
+            );
+
+        };
+
+
+    image.src =
+        imageData;
+
+}
+
+
+/* =====================================================
+   PASSENDSTE WOLKE FINDEN
+===================================================== */
+
+function findBestCloud(features) {
+
+    let bestCloud =
+        null;
+
+
+    let bestDistance =
+        Infinity;
+
+
+    CLOUD_DATABASE.forEach(cloud => {
+
+        const distance =
+
+            Math.pow(
+                features.white -
+                cloud.white,
+                2
+            ) * 1.2
+
+            +
+
+            Math.pow(
+                features.blue -
+                cloud.blue,
+                2
+            ) * 1.0
+
+            +
+
+            Math.pow(
+                features.brightness -
+                cloud.brightness,
+                2
+            ) * 1.3
+
+            +
+
+            Math.pow(
+                features.contrast -
+                cloud.contrast,
+                2
+            ) * 1.5
+
+            +
+
+            Math.pow(
+                features.edge -
+                cloud.edge,
+                2
+            ) * 1.5;
+
+
+        if (
+            distance <
+            bestDistance
+        ) {
+
+            bestDistance =
+                distance;
+
+
+            bestCloud =
+                cloud;
+
+        }
+
+    });
+
+
+    return bestCloud;
+
+}
+
+
+/* =====================================================
+   ERGEBNIS
+===================================================== */
+
+function finishAnalysis(
+    cloud,
+    features
+) {
+
+    document.getElementById(
+        "analysisBox"
+    ).classList.add("hidden");
+
+
+    /*
+     * Sehr dunkle oder ungeeignete
+     * Fotos werden nicht gewertet.
+     */
+
+    const unsuitable =
+        features.brightness < 0.12 ||
+        (
+            features.white < 0.04 &&
+            features.blue < 0.04
+        );
+
+
+    if (unsuitable) {
+
+        showNoCloud();
+
+        return;
+
+    }
+
+
+    /*
+     * Erfolgreiche Erkennung
+     */
+
+    gameData.score +=
+        cloud.points;
+
+
+    gameData.totalClouds++;
+
+
+    if (
+        !gameData.clouds[
+            cloud.name
+        ]
+    ) {
+
+        gameData.clouds[
+            cloud.name
+        ] = 0;
+
+    }
+
+
+    gameData.clouds[
+        cloud.name
+    ]++;
+
+
+    saveGame();
+
+    updateAllDisplays();
+
+
+    document.getElementById(
+        "resultIcon"
+    ).textContent =
+        cloud.icon;
+
+
+    document.getElementById(
+        "resultName"
+    ).textContent =
+        cloud.name;
+
+
+    document.getElementById(
+        "resultDescription"
+    ).textContent =
+        cloud.description;
+
+
+    document.getElementById(
+        "resultPoints"
+    ).textContent =
+        cloud.points;
+
+
+    document.getElementById(
+        "resultBox"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "backGameButton"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   KEINE WOLKE ERKANNT
+===================================================== */
+
+function showNoCloud() {
+
+    const resultBox =
+        document.getElementById(
+            "resultBox"
+        );
+
+
+    resultBox.innerHTML = `
+
+        <div class="cloud-icon">
+            🔎
+        </div>
+
+        <div class="cloud-name">
+            Keine passende Wolke erkannt
+        </div>
+
+        <div class="cloud-description">
+            Versuche es mit einem Foto,
+            auf dem die Wolke gut zu sehen ist.
+        </div>
+
+        <button onclick="prepareNextCloud()">
+            📷 Noch einmal fotografieren
+        </button>
+
+        <button
+            class="secondary"
+            onclick="showScreen('startScreen')"
+        >
+            🏠 Zurück zur Startseite
+        </button>
+
+    `;
+
+
+    resultBox.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   NÄCHSTE WOLKE / NEUES FOTO
+===================================================== */
+
+function prepareNextCloud() {
+
+    const video =
+        document.getElementById("camera");
+
+    const preview =
+        document.getElementById("preview");
+
+    const analysisBox =
+        document.getElementById("analysisBox");
+
+    const resultBox =
+        document.getElementById("resultBox");
+
+    const cameraButton =
+        document.getElementById("cameraButton");
+
+    const backButton =
+        document.getElementById("backGameButton");
+
+
+    resultBox.style.display =
+        "none";
+
+
+    analysisBox.classList.add(
+        "hidden"
+    );
+
+
+    preview.style.display =
+        "none";
+
+
+    video.style.display =
+        "block";
+
+
+    cameraButton.style.display =
+        "block";
+
+
+    backButton.style.display =
+        "block";
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "Fotografiere eine Wolke am Himmel.";
+
+
+    document.getElementById(
+        "fileInput"
+    ).value = "";
+
+
+    startCamera();
+
+}
+
+
+/* =====================================================
+   SPIEL START
+===================================================== */
+
+loadGame();
+
+</script>
+
+</body>
+</html>
