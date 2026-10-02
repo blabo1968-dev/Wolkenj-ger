@@ -2,15 +2,26 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Wolkenjäger – Blankenhagen Spieleentwicklung</title>
 
 <style>
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -87,6 +98,7 @@ button.red {
     margin: 15px 0;
 }
 
+
 /* =====================================================
    KAMERAFENSTER
 ===================================================== */
@@ -98,19 +110,49 @@ button.red {
     border-radius: 16px;
     overflow: hidden;
     margin: 15px 0;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     position: relative;
+
+    /*
+       Verhindert Browser-Gesten wie
+       Pinch-Zoom innerhalb des Kamerafensters.
+    */
+    touch-action: none;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
 }
 
-video {
+.camera-box video {
     width: 100%;
     height: 100%;
+
     display: block;
+
+    /*
+       Das Kamerabild bleibt vollständig
+       innerhalb des Kamerafensters.
+    */
     object-fit: cover;
+
     transform: scale(1);
     transform-origin: center center;
+
+    /*
+       Browser-Gesten verhindern.
+    */
+    touch-action: none;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    -webkit-touch-callout: none;
 }
 
 .preview {
@@ -160,6 +202,7 @@ video {
     padding: 14px;
     margin: 8px 0;
     border-radius: 10px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -215,6 +258,7 @@ input[type="file"] {
 </style>
 </head>
 
+
 <body>
 
 
@@ -232,6 +276,7 @@ input[type="file"] {
         Blankenhagen Spieleentwicklung
     </div>
 
+
     <div class="card">
 
         <div class="score-box">
@@ -239,26 +284,36 @@ input[type="file"] {
             <strong id="startScore">0</strong>
         </div>
 
+
         <button onclick="showScreen('gameScreen')">
             ☁️ Spiel starten
         </button>
 
+
         <button
             class="secondary"
             onclick="showScreen('cloudsScreen')">
+
             📚 Erkannte Wolken
+
         </button>
+
 
         <button
             class="secondary"
             onclick="toggleRules()">
+
             📖 Regeln
+
         </button>
+
 
         <button
             class="secondary"
             onclick="toggleImpressum()">
+
             ℹ️ Impressum
+
         </button>
 
     </div>
@@ -339,8 +394,9 @@ input[type="file"] {
 </section>
 
 
+
 <!-- =====================================================
-     SEITE 2 – SPIEL / FOTOGRAFIEREN
+     SEITE 2 – SPIEL / KAMERA
 ===================================================== -->
 
 <section id="gameScreen" class="screen">
@@ -349,15 +405,20 @@ input[type="file"] {
 
     <h1>☁️ Nächste Wolke</h1>
 
+
     <div class="score-box">
+
         ⭐ Punkte:
         <strong id="gameScore">0</strong>
+
     </div>
 
 
     <div class="card">
 
+
         <div class="camera-box">
+
 
             <video
                 id="camera"
@@ -365,6 +426,7 @@ input[type="file"] {
                 muted
                 playsinline>
             </video>
+
 
             <img
                 id="preview"
@@ -376,21 +438,27 @@ input[type="file"] {
         <div
             id="status"
             class="status">
+
             Fotografiere eine Wolke am Himmel.
+
         </div>
 
 
         <button
             id="cameraButton"
             onclick="takePhoto()">
+
             📷 Wolke fotografieren
+
         </button>
 
 
         <label
             class="upload"
             for="fileInput">
+
             🖼️ Foto auswählen
+
         </label>
 
 
@@ -403,6 +471,7 @@ input[type="file"] {
     </div>
 
 
+
     <!-- ANALYSE -->
 
     <div
@@ -410,10 +479,13 @@ input[type="file"] {
         class="card hidden">
 
         <div class="loading">
+
             🔎 Wolke wird erkannt ...
+
         </div>
 
     </div>
+
 
 
     <!-- ERGEBNIS -->
@@ -422,62 +494,81 @@ input[type="file"] {
         id="resultBox"
         class="card result">
 
+
         <div
             class="cloud-icon"
             id="resultIcon">
+
             ☁️
+
         </div>
 
 
         <div
             class="cloud-name"
             id="resultName">
+
             Cumulus
+
         </div>
 
 
         <div
             class="cloud-description"
             id="resultDescription">
+
             Haufenwolke
+
         </div>
 
 
         <div class="points">
+
             +<span id="resultPoints">10</span>
             Punkte
+
         </div>
 
 
         <button onclick="prepareNextCloud()">
+
             📷 Noch einmal fotografieren
+
         </button>
 
 
         <button onclick="prepareNextCloud()">
+
             ➡️ Nächste Wolke
+
         </button>
 
 
         <button
             class="secondary"
             onclick="showScreen('startScreen')">
+
             🏠 Zurück zur Startseite
+
         </button>
 
     </div>
+
 
 
     <button
         id="backGameButton"
         class="secondary"
         onclick="showScreen('startScreen')">
+
         🏠 Zurück zur Startseite
+
     </button>
 
 </div>
 
 </section>
+
 
 
 <!-- =====================================================
@@ -493,18 +584,24 @@ input[type="file"] {
 
     <div class="card">
 
+
         <div class="score-box">
+
             ⭐ Gesamtpunktestand:
             <strong id="cloudScore">0</strong>
+
         </div>
 
 
         <div class="score-box">
+
             ☁️ Erkannte Wolken:
             <strong id="totalClouds">0</strong>
+
         </div>
 
     </div>
+
 
 
     <div class="card">
@@ -514,7 +611,9 @@ input[type="file"] {
         <br>
 
         <div id="cloudList">
+
             Noch keine Wolken erkannt.
+
         </div>
 
     </div>
@@ -523,7 +622,9 @@ input[type="file"] {
     <button
         class="secondary"
         onclick="showScreen('startScreen')">
+
         🏠 Zurück zur Startseite
+
     </button>
 
 </div>
@@ -531,7 +632,9 @@ input[type="file"] {
 </section>
 
 
+
 <script>
+
 
 /* =====================================================
    WOLKENDATENBANK
@@ -638,15 +741,21 @@ const CLOUD_DATABASE = [
 ];
 
 
+
 /* =====================================================
    SPIELDATEN
 ===================================================== */
 
 let gameData = {
+
     score: 0,
+
     totalClouds: 0,
+
     clouds: {}
+
 };
+
 
 
 /* =====================================================
@@ -656,11 +765,15 @@ let gameData = {
 function saveGame() {
 
     localStorage.setItem(
+
         "wolkenjaeger_spielstand",
+
         JSON.stringify(gameData)
+
     );
 
 }
+
 
 
 /* =====================================================
@@ -670,6 +783,7 @@ function saveGame() {
 function loadGame() {
 
     const saved =
+
         localStorage.getItem(
             "wolkenjaeger_spielstand"
         );
@@ -682,12 +796,18 @@ function loadGame() {
             gameData =
                 JSON.parse(saved);
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             gameData = {
+
                 score: 0,
+
                 totalClouds: 0,
+
                 clouds: {}
+
             };
 
         }
@@ -700,8 +820,9 @@ function loadGame() {
 }
 
 
+
 /* =====================================================
-   ALLE ANZEIGEN AKTUALISIEREN
+   ANZEIGEN AKTUALISIEREN
 ===================================================== */
 
 function updateAllDisplays() {
@@ -733,6 +854,7 @@ function updateAllDisplays() {
     updateCloudList();
 
 }
+
 
 
 /* =====================================================
@@ -778,14 +900,21 @@ function updateCloudList() {
 
 
                 item.innerHTML = `
+
                     <span>
+
                         ${cloud.icon}
                         ${cloud.name}
+
                     </span>
 
+
                     <strong>
+
                         ${count}×
+
                     </strong>
+
                 `;
 
 
@@ -805,6 +934,7 @@ function updateCloudList() {
     }
 
 }
+
 
 
 /* =====================================================
@@ -842,13 +972,16 @@ function showScreen(screenId) {
 
         startCamera();
 
-    } else {
+    }
+
+    else {
 
         stopCamera();
 
     }
 
 }
+
 
 
 /* =====================================================
@@ -870,6 +1003,7 @@ function toggleRules() {
 }
 
 
+
 /* =====================================================
    IMPRESSUM
 ===================================================== */
@@ -889,11 +1023,13 @@ function toggleImpressum() {
 }
 
 
+
 /* =====================================================
    KAMERA
 ===================================================== */
 
 let cameraStream = null;
+
 
 
 async function startCamera() {
@@ -932,9 +1068,13 @@ async function startCamera() {
             await navigator.mediaDevices.getUserMedia({
 
                 video: {
+
                     facingMode: {
+
                         ideal: "environment"
+
                     }
+
                 },
 
                 audio: false
@@ -946,12 +1086,20 @@ async function startCamera() {
             cameraStream;
 
 
+        /*
+         * Mobile Browser:
+         * Kamera ohne Ton und
+         * ohne automatische Vollbilddarstellung.
+         */
+
         video.muted = true;
+
 
         video.setAttribute(
             "muted",
             ""
         );
+
 
         video.setAttribute(
             "playsinline",
@@ -963,12 +1111,21 @@ async function startCamera() {
 
             await video.play();
 
-        } catch (error) {
+        }
+
+        catch (error) {
+
+            /*
+             * Manche Browser benötigen
+             * eine Benutzeraktion.
+             */
 
         }
 
+    }
 
-    } catch (error) {
+
+    catch (error) {
 
         document.getElementById(
             "status"
@@ -978,6 +1135,7 @@ async function startCamera() {
     }
 
 }
+
 
 
 /* =====================================================
@@ -1004,6 +1162,7 @@ function stopCamera() {
     }
 
 }
+
 
 
 /* =====================================================
@@ -1051,18 +1210,27 @@ function takePhoto() {
 
 
     ctx.drawImage(
+
         video,
+
         0,
+
         0,
+
         canvas.width,
+
         canvas.height
+
     );
 
 
     const imageData =
         canvas.toDataURL(
+
             "image/jpeg",
+
             0.85
+
         );
 
 
@@ -1071,6 +1239,7 @@ function takePhoto() {
     );
 
 }
+
 
 
 /* =====================================================
@@ -1109,6 +1278,7 @@ function handleFile(event) {
     );
 
 }
+
 
 
 /* =====================================================
@@ -1189,6 +1359,7 @@ function analysePhoto(imageData) {
 
 
     setTimeout(
+
         () => {
 
             analyseImagePixels(
@@ -1196,14 +1367,17 @@ function analysePhoto(imageData) {
             );
 
         },
+
         500
+
     );
 
 }
 
 
+
 /* =====================================================
-   BILDMERKMALE ERMITTELN
+   BILDMERKMALE
 ===================================================== */
 
 function analyseImagePixels(
@@ -1228,11 +1402,14 @@ function analyseImagePixels(
 
             const height =
                 Math.round(
+
                     image.height *
+
                     (
                         width /
                         image.width
                     )
+
                 );
 
 
@@ -1251,20 +1428,31 @@ function analyseImagePixels(
 
 
             ctx.drawImage(
+
                 image,
+
                 0,
+
                 0,
+
                 width,
+
                 height
+
             );
 
 
             const pixels =
                 ctx.getImageData(
+
                     0,
+
                     0,
+
                     width,
+
                     height
+
                 ).data;
 
 
@@ -1279,17 +1467,24 @@ function analyseImagePixels(
             let edgeStrength = 0;
 
 
+
             for (
+
                 let i = 0;
+
                 i < pixels.length;
+
                 i += 4
+
             ) {
 
                 const r =
                     pixels[i];
 
+
                 const g =
                     pixels[i + 1];
+
 
                 const b =
                     pixels[i + 2];
@@ -1313,8 +1508,11 @@ function analyseImagePixels(
 
 
                 if (
+
                     b > r * 1.12 &&
+
                     b > g * 1.05
+
                 ) {
 
                     bluePixels++;
@@ -1323,9 +1521,13 @@ function analyseImagePixels(
 
 
                 if (
+
                     r > 185 &&
+
                     g > 185 &&
+
                     b > 185
+
                 ) {
 
                     whitePixels++;
@@ -1333,6 +1535,7 @@ function analyseImagePixels(
                 }
 
             }
+
 
 
             const count =
@@ -1359,18 +1562,24 @@ function analyseImagePixels(
 
 
             brightnessValues.forEach(
+
                 value => {
 
                     variance +=
+
                         Math.pow(
+
                             (
                                 value / 255
                             ) -
                             averageBrightness,
+
                             2
+
                         );
 
                 }
+
             );
 
 
@@ -1381,34 +1590,48 @@ function analyseImagePixels(
 
             const contrast =
                 Math.min(
+
                     1,
+
                     Math.sqrt(
                         variance
                     ) * 3
+
                 );
+
 
 
             /* Kantenerkennung */
 
             for (
+
                 let y = 1;
+
                 y < height;
+
                 y++
+
             ) {
 
                 for (
+
                     let x = 1;
+
                     x < width;
+
                     x++
+
                 ) {
 
                     const current =
+
                         brightnessValues[
                             y * width + x
                         ] / 255;
 
 
                     const previous =
+
                         brightnessValues[
                             y * width +
                             (x - 1)
@@ -1416,9 +1639,12 @@ function analyseImagePixels(
 
 
                     edgeStrength +=
+
                         Math.abs(
+
                             current -
                             previous
+
                         );
 
                 }
@@ -1427,6 +1653,7 @@ function analyseImagePixels(
 
 
             edgeStrength =
+
                 edgeStrength /
                 (width * height);
 
@@ -1461,8 +1688,11 @@ function analyseImagePixels(
 
 
             finishAnalysis(
+
                 cloud,
+
                 features
+
             );
 
         };
@@ -1474,67 +1704,89 @@ function analyseImagePixels(
 }
 
 
+
 /* =====================================================
-   PASSENDSTE WOLKE FINDEN
+   PASSENDSTE WOLKE
 ===================================================== */
 
 function findBestCloud(
     features
 ) {
 
-    let bestCloud = null;
+    let bestCloud =
+        null;
+
 
     let bestDistance =
         Infinity;
 
 
     CLOUD_DATABASE.forEach(
+
         cloud => {
 
             const distance =
 
                 Math.pow(
+
                     features.white -
                     cloud.white,
+
                     2
+
                 ) * 1.2
 
                 +
 
                 Math.pow(
+
                     features.blue -
                     cloud.blue,
+
                     2
+
                 ) * 1.0
 
                 +
 
                 Math.pow(
+
                     features.brightness -
                     cloud.brightness,
+
                     2
+
                 ) * 1.3
 
                 +
 
                 Math.pow(
+
                     features.contrast -
                     cloud.contrast,
+
                     2
+
                 ) * 1.5
 
                 +
 
                 Math.pow(
+
                     features.edge -
                     cloud.edge,
+
                     2
+
                 ) * 1.5;
 
 
+
             if (
+
                 distance <
                 bestDistance
+
             ) {
 
                 bestDistance =
@@ -1547,12 +1799,14 @@ function findBestCloud(
             }
 
         }
+
     );
 
 
     return bestCloud;
 
 }
+
 
 
 /* =====================================================
@@ -1572,10 +1826,15 @@ function finishAnalysis(
 
 
     const unsuitable =
+
         features.brightness < 0.12 ||
+
         (
+
             features.white < 0.04 &&
+
             features.blue < 0.04
+
         );
 
 
@@ -1614,6 +1873,7 @@ function finishAnalysis(
 
 
     saveGame();
+
 
     updateAllDisplays();
 
@@ -1656,6 +1916,7 @@ function finishAnalysis(
 }
 
 
+
 /* =====================================================
    KEINE WOLKE ERKANNT
 ===================================================== */
@@ -1674,23 +1935,34 @@ function showNoCloud() {
             🔎
         </div>
 
+
         <div class="cloud-name">
             Keine passende Wolke erkannt
         </div>
 
+
         <div class="cloud-description">
+
             Versuche es mit einem Foto,
             auf dem die Wolke gut zu sehen ist.
+
         </div>
 
-        <button onclick="prepareNextCloud()">
+
+        <button
+            onclick="prepareNextCloud()">
+
             📷 Noch einmal fotografieren
+
         </button>
+
 
         <button
             class="secondary"
             onclick="showScreen('startScreen')">
+
             🏠 Zurück zur Startseite
+
         </button>
 
     `;
@@ -1702,8 +1974,9 @@ function showNoCloud() {
 }
 
 
+
 /* =====================================================
-   NÄCHSTE WOLKE / NEUES FOTO
+   NÄCHSTE WOLKE
 ===================================================== */
 
 function prepareNextCloud() {
@@ -1783,6 +2056,96 @@ function prepareNextCloud() {
     startCamera();
 
 }
+
+
+
+/* =====================================================
+   BROWSER-ZOOM IM KAMERAFENSTER VERHINDERN
+===================================================== */
+
+const cameraBox =
+    document.querySelector(
+        ".camera-box"
+    );
+
+
+if (cameraBox) {
+
+    cameraBox.addEventListener(
+
+        "touchmove",
+
+        function(event) {
+
+            if (
+                event.touches.length > 1
+            ) {
+
+                event.preventDefault();
+
+            }
+
+        },
+
+        {
+            passive: false
+        }
+
+    );
+
+
+    cameraBox.addEventListener(
+
+        "gesturestart",
+
+        function(event) {
+
+            event.preventDefault();
+
+        },
+
+        {
+            passive: false
+        }
+
+    );
+
+
+    cameraBox.addEventListener(
+
+        "gesturechange",
+
+        function(event) {
+
+            event.preventDefault();
+
+        },
+
+        {
+            passive: false
+        }
+
+    );
+
+
+    cameraBox.addEventListener(
+
+        "gestureend",
+
+        function(event) {
+
+            event.preventDefault();
+
+        },
+
+        {
+            passive: false
+        }
+
+    );
+
+}
+
 
 
 /* =====================================================
