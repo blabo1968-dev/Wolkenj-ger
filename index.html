@@ -185,6 +185,7 @@ button:disabled {
     color: #38bdf8;
     margin-top: 8px;
     min-height: 22px;
+    line-height: 1.4;
 }
 
 .result {
@@ -406,8 +407,6 @@ Wolken erkennen · analysieren · Punkte sammeln
 </div>
 
 
-<!-- WETTER -->
-
 <div class="card"
      style="padding: 12px; margin-bottom: 15px;">
 
@@ -437,8 +436,6 @@ Lade Wetterdaten...
 </div>
 
 
-<!-- KAMERA -->
-
 <div class="card">
 
 <div class="camera-box">
@@ -455,8 +452,6 @@ Lade Wetterdaten...
 
 </div>
 
-
-<!-- ZOOM -->
 
 <div class="zoom-box">
 
@@ -531,8 +526,6 @@ Richte die Kamera auf eine Wolke im Freien.
 </div>
 
 
-<!-- ERGEBNIS -->
-
 <div id="resultBox"
      class="card result">
 
@@ -564,8 +557,6 @@ Wolke
 
 </div>
 
-
-<!-- KEINE WOLKE -->
 
 <div id="noCloudBox"
      class="card result">
@@ -920,6 +911,29 @@ async function analyzeWithAI(imgElement) {
                 results
             );
 
+
+            /*
+             * NEU:
+             * Das tatsächliche KI-Ergebnis wird
+             * direkt im Spiel angezeigt.
+             */
+
+            const aiStatus =
+                document.getElementById(
+                    "aiStatus"
+                );
+
+
+            aiStatus.textContent =
+                "🤖 KI: " +
+                results[0].label +
+                " (" +
+                Math.round(
+                    results[0].score * 100
+                ) +
+                "%)";
+
+
             return results[0];
 
         }
@@ -932,6 +946,16 @@ async function analyzeWithAI(imgElement) {
             "KI-Analyse:",
             error
         );
+
+
+        const aiStatus =
+            document.getElementById(
+                "aiStatus"
+            );
+
+
+        aiStatus.textContent =
+            "⚠️ Fehler bei der KI-Analyse";
 
     }
 
@@ -1767,8 +1791,7 @@ function handleFile(event) {
 
 
 /* =========================================================
-   GEÄNDERT:
-   BILDERKENNUNG
+   BILDAUSWERTUNG
    ========================================================= */
 
 async function processCapturedImage(imgElement) {
@@ -1792,10 +1815,6 @@ async function processCapturedImage(imgElement) {
         "🤖 KI analysiert Bild...";
 
 
-    /*
-       KI zuerst ausführen
-    */
-
     let aiResult = null;
 
 
@@ -1809,13 +1828,14 @@ async function processCapturedImage(imgElement) {
     }
 
 
-    /*
-       Zunächst keine lokale Prüfung.
-       Die KI darf die Entscheidung treffen.
-    */
-
     let matchedCloud = null;
 
+
+    /*
+     * Die KI-Ausgabe wird nur dann
+     * einer DWD-Wolkengattung zugeordnet,
+     * wenn ihr Name einen passenden Begriff enthält.
+     */
 
     if (
         aiResult &&
@@ -1825,10 +1845,6 @@ async function processCapturedImage(imgElement) {
         const label =
             aiResult.label.toLowerCase();
 
-
-        /*
-           Bekannte Wolkenbegriffe
-        */
 
         if (
             label.includes("cumulonimbus") ||
@@ -1890,10 +1906,6 @@ async function processCapturedImage(imgElement) {
 
         }
 
-        /*
-           Allgemeine Wolke / Himmel
-        */
-
         else if (
             label.includes("cloud") ||
             label.includes("cloudy") ||
@@ -1912,10 +1924,9 @@ async function processCapturedImage(imgElement) {
 
 
     /*
-       Wenn die KI nichts Passendes liefert,
-       bleibt die bisherige lokale Analyse
-       als Fallback erhalten.
-    */
+     * Alte lokale Analyse bleibt unverändert
+     * und dient weiterhin als Fallback.
+     */
 
     if (!matchedCloud) {
 
@@ -1923,14 +1934,6 @@ async function processCapturedImage(imgElement) {
             classifyImage(
                 imgElement
             );
-
-
-        if (matchedCloud) {
-
-            aiStatus.textContent =
-                "☁️ Wolke über die lokale Analyse erkannt.";
-
-        }
 
     }
 
@@ -1958,10 +1961,6 @@ async function processCapturedImage(imgElement) {
             "nextButton"
         );
 
-
-    /*
-       Wolke erkannt
-    */
 
     if (matchedCloud) {
 
@@ -2036,8 +2035,29 @@ async function processCapturedImage(imgElement) {
             "none";
 
 
-        aiStatus.textContent =
-            "☁️ Wolke erkannt";
+        /*
+         * Die KI-Ausgabe bleibt sichtbar.
+         */
+
+        if (aiResult) {
+
+            aiStatus.textContent =
+                "🤖 KI: " +
+                aiResult.label +
+                " (" +
+                Math.round(
+                    aiResult.score * 100
+                ) +
+                "%)";
+
+        }
+
+        else {
+
+            aiStatus.textContent =
+                "☁️ Wolke über lokale Analyse erkannt.";
+
+        }
 
     }
 
@@ -2051,8 +2071,30 @@ async function processCapturedImage(imgElement) {
             "block";
 
 
-        aiStatus.textContent =
-            "⚠️ Keine Wolke erkannt.";
+        /*
+         * Auch bei keiner Wolke bleibt
+         * das tatsächliche KI-Ergebnis sichtbar.
+         */
+
+        if (aiResult) {
+
+            aiStatus.textContent =
+                "🤖 KI: " +
+                aiResult.label +
+                " (" +
+                Math.round(
+                    aiResult.score * 100
+                ) +
+                "%)";
+
+        }
+
+        else {
+
+            aiStatus.textContent =
+                "⚠️ Keine Wolke erkannt.";
+
+        }
 
     }
 
@@ -2183,7 +2225,7 @@ window.addEventListener(
     font-size: 13px;
 ">
 
-Wir entwickeln Spiele für draussen
+Wir entwickeln Spiele für draussen und drinnen.
 
 </p>
 
