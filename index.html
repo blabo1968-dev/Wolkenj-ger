@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -270,10 +269,6 @@ input[type=file] {
 </style>
 
 
-<!-- =========================================================
-     TRANSFORMERS.JS
-     ========================================================= -->
-
 <script type="module">
 
 import {
@@ -292,9 +287,7 @@ window.transformersPipeline = pipeline;
 <body>
 
 
-<!-- =========================================================
-     START
-     ========================================================= -->
+<!-- STARTBILDSCHIRM -->
 
 <section id="startScreen" class="screen active">
 
@@ -306,52 +299,36 @@ window.transformersPipeline = pipeline;
 DWD Internationaler Wolkenatlas (CC BY 4.0)
 </div>
 
-
 <div class="card">
 
 <div class="score-box">
 ⭐ Punkte: <span id="startScore">0</span>
 </div>
 
-
 <button id="startButton"
         disabled
         onclick="startGame()">
-
 ⏳ KI wird geladen...
-
 </button>
-
 
 <button class="secondary"
         onclick="showClouds()">
-
 📚 DWD-Wolkengattungen
-
 </button>
-
 
 <button class="secondary"
         onclick="toggleRules()">
-
 📖 Regeln
-
 </button>
-
 
 <button class="secondary"
         onclick="toggleImpressum()">
-
 ℹ️ Impressum
-
 </button>
-
 
 <div id="aiStartStatus"
      class="ai-status">
-
 KI wird vorbereitet...
-
 </div>
 
 </div>
@@ -369,7 +346,7 @@ Fotografiere eine Wolke im Freien oder lade ein Himmelsbild hoch.
 </p>
 
 <p>
-Die Aufnahme wird mit einer lokalen KI analysiert und zusätzlich mit der vorhandenen Referenzbasis verglichen.
+Das Bild wird lokal mit einer KI und einer zusätzlichen Bildanalyse untersucht.
 </p>
 
 <p>
@@ -389,6 +366,7 @@ Es werden bewusst keine Schein-Prozentwerte angezeigt.
 <p>Blankenhagen Spieleentwicklung</p>
 <p>Jörg Blankenhagen</p>
 <p>73614 Schorndorf</p>
+<p>spieleentwicklung@freenet.de</p>
 
 </div>
 
@@ -402,9 +380,7 @@ Wolken erkennen · analysieren · Punkte sammeln
 </section>
 
 
-<!-- =========================================================
-     SPIEL
-     ========================================================= -->
+<!-- SPIELBILDSCHIRM -->
 
 <section id="gameScreen" class="screen">
 
@@ -412,13 +388,10 @@ Wolken erkennen · analysieren · Punkte sammeln
 
 <h1>☁ Nächste Wolke</h1>
 
-
 <div class="score-box">
 ⭐ Punkte: <span id="gameScore">0</span>
 </div>
 
-
-<!-- WETTER -->
 
 <div class="card"
      style="padding: 12px; margin-bottom: 15px;">
@@ -432,24 +405,18 @@ Wolken erkennen · analysieren · Punkte sammeln
 
 <div id="locationText"
      class="weather-info">
-
 Bestimme Standort...
-
 </div>
 
 <div id="weatherText"
      class="weather-info">
-
 Lade Wetterdaten...
-
 </div>
 
 </div>
 
 </div>
 
-
-<!-- KAMERA -->
 
 <div class="card">
 
@@ -468,8 +435,6 @@ Lade Wetterdaten...
 </div>
 
 
-<!-- ZOOM -->
-
 <div class="zoom-box">
 
 <div class="zoom-title">
@@ -478,13 +443,10 @@ Lade Wetterdaten...
 
 <span id="zoomValue"
       class="zoom-value">
-
 1,0×
-
 </span>
 
 </div>
-
 
 <input id="zoomSlider"
        class="zoom-slider"
@@ -500,24 +462,17 @@ Lade Wetterdaten...
 
 <div id="status"
      class="status">
-
 Richte die Kamera auf eine Wolke im Freien.
-
 </div>
-
 
 <div id="aiStatus"
      class="ai-status">
-
 🤖 KI bereit
-
 </div>
 
 
 <button onclick="takePhoto()">
-
 📷 Wolke fotografieren
-
 </button>
 
 
@@ -535,54 +490,36 @@ Richte die Kamera auf eine Wolke im Freien.
 
 <div id="databaseStatus"
      class="database-status">
-
 ✅ DWD-Atlas Referenzbasis aktiv
-
 </div>
 
 </div>
 
-
-<!-- =========================================================
-     ERGEBNIS
-     ========================================================= -->
 
 <div id="resultBox"
      class="card result">
 
 <div id="resultIcon"
      class="cloud-icon">
-
 ☁️
-
 </div>
-
 
 <div id="resultName"
      class="cloud-name">
-
 Wolke
-
 </div>
-
 
 <div id="resultDescription"
      class="cloud-description">
-
 </div>
-
 
 <div id="resultPoints"
      class="points">
-
 +0 Punkte
-
 </div>
 
 </div>
 
-
-<!-- KEINE WOLKE -->
 
 <div id="noCloudBox"
      class="card result">
@@ -592,15 +529,11 @@ Wolke
 </div>
 
 <div class="cloud-name">
-
 Keine passende Wolke erkannt
-
 </div>
 
 <div class="cloud-description">
-
 Das Bild konnte keiner eindeutigen Wolkengattung zugeordnet werden.
-
 </div>
 
 </div>
@@ -609,26 +542,20 @@ Das Bild konnte keiner eindeutigen Wolkengattung zugeordnet werden.
 <button id="retryButton"
         class="secondary hidden"
         onclick="prepareNextCloud()">
-
 📷 Noch einmal fotografieren
-
 </button>
 
 
 <button id="nextButton"
         class="hidden"
         onclick="prepareNextCloud()">
-
 ➡ Nächste Wolke
-
 </button>
 
 
 <button class="secondary"
         onclick="showScreen('startScreen')">
-
 🏠 Zurück zur Startseite
-
 </button>
 
 </div>
@@ -636,9 +563,7 @@ Das Bild konnte keiner eindeutigen Wolkengattung zugeordnet werden.
 </section>
 
 
-<!-- =========================================================
-     WOLKENLISTE
-     ========================================================= -->
+<!-- WOLKENLISTE -->
 
 <section id="cloudsScreen"
          class="screen">
@@ -647,22 +572,16 @@ Das Bild konnte keiner eindeutigen Wolkengattung zugeordnet werden.
 
 <h1>📚 DWD-Gattungen</h1>
 
-
 <div class="card">
 
 <div class="score-box">
-
 ⭐ Gesamtpunkte:
 <span id="cloudsScore">0</span>
-
 </div>
 
-
 <div class="score-box">
-
 ☁️ Erfasste Wolken:
 <span id="cloudsTotal">0</span>
-
 </div>
 
 </div>
@@ -677,9 +596,7 @@ Das Bild konnte keiner eindeutigen Wolkengattung zugeordnet werden.
 
 <button class="secondary"
         onclick="showScreen('startScreen')">
-
 🏠 Zurück zur Startseite
-
 </button>
 
 </div>
@@ -691,7 +608,7 @@ Das Bild konnte keiner eindeutigen Wolkengattung zugeordnet werden.
 
 
 /* =========================================================
-   WOLKENDATENBANK
+   DWD-WOLKENDATEN
    ========================================================= */
 
 const CLOUD_DATABASE = [
@@ -825,7 +742,6 @@ let gameData = {
     clouds:{}
 };
 
-
 let cameraStream = null;
 let currentZoom = 1;
 
@@ -845,7 +761,6 @@ async function loadAI() {
     const aiStartStatus =
         document.getElementById("aiStartStatus");
 
-
     try {
 
         if (!window.transformersPipeline) {
@@ -856,10 +771,8 @@ async function loadAI() {
 
         }
 
-
         aiStartStatus.textContent =
             "⏳ KI-Modell wird geladen...";
-
 
         classifier =
             await window.transformersPipeline(
@@ -867,40 +780,34 @@ async function loadAI() {
                 "Xenova/mobilevit-small"
             );
 
-
         aiReady = true;
-
 
         startButton.disabled = false;
 
         startButton.textContent =
             "☁ Spiel starten (KI bereit)";
 
-
         aiStartStatus.textContent =
             "✅ KI bereit";
 
     }
 
-    catch (error) {
+    catch(error) {
 
         console.error(
             "KI-Fehler:",
             error
         );
 
-
         aiReady = false;
-
 
         startButton.disabled = false;
 
         startButton.textContent =
             "☁ Spiel starten";
 
-
         aiStartStatus.textContent =
-            "⚠️ KI nicht verfügbar – lokale Analyse bleibt aktiv.";
+            "⚠️ KI nicht verfügbar – Bildanalyse bleibt aktiv.";
 
     }
 
@@ -917,17 +824,13 @@ async function analyzeWithAI(imgElement) {
         !classifier ||
         !aiReady
     ) {
-
         return null;
-
     }
-
 
     try {
 
         const results =
             await classifier(imgElement);
-
 
         if (
             results &&
@@ -945,7 +848,7 @@ async function analyzeWithAI(imgElement) {
 
     }
 
-    catch (error) {
+    catch(error) {
 
         console.error(
             "KI-Analyse:",
@@ -954,34 +857,257 @@ async function analyzeWithAI(imgElement) {
 
     }
 
-
     return null;
 
 }
 
 
 /* =========================================================
-   KI-ERGEBNIS EINER WOLKE ZUORDNEN
+   NEU:
+   BILD AUF HIMMEL / WOLKE PRÜFEN
+   ========================================================= */
+
+function analyzeSkyStructure(imgElement) {
+
+    const canvas =
+        document.createElement("canvas");
+
+    canvas.width = 96;
+    canvas.height = 96;
+
+    const ctx =
+        canvas.getContext(
+            "2d",
+            {
+                willReadFrequently:true
+            }
+        );
+
+    ctx.drawImage(
+        imgElement,
+        0,
+        0,
+        96,
+        96
+    );
+
+    const data =
+        ctx.getImageData(
+            0,
+            0,
+            96,
+            96
+        ).data;
+
+    let pixels = 0;
+
+    let bluePixels = 0;
+    let brightPixels = 0;
+    let neutralBrightPixels = 0;
+    let darkPixels = 0;
+
+    let totalBrightness = 0;
+
+    for (
+        let i = 0;
+        i < data.length;
+        i += 4
+    ) {
+
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        const brightness =
+            (r + g + b) / 3;
+
+        totalBrightness +=
+            brightness;
+
+        pixels++;
+
+        /*
+           Blauer Himmel
+        */
+
+        if (
+            b > r * 1.05 &&
+            b > g * 1.02 &&
+            b > 70
+        ) {
+
+            bluePixels++;
+
+        }
+
+        /*
+           Helle Wolkenbereiche
+        */
+
+        if (
+            brightness > 155
+        ) {
+
+            brightPixels++;
+
+        }
+
+        /*
+           Weiß/graue Wolken
+        */
+
+        if (
+            brightness > 120 &&
+            Math.abs(r-g) < 30 &&
+            Math.abs(g-b) < 30
+        ) {
+
+            neutralBrightPixels++;
+
+        }
+
+        if (
+            brightness < 55
+        ) {
+
+            darkPixels++;
+
+        }
+
+    }
+
+
+    const blueRatio =
+        bluePixels / pixels;
+
+    const brightRatio =
+        brightPixels / pixels;
+
+    const neutralRatio =
+        neutralBrightPixels / pixels;
+
+    const darkRatio =
+        darkPixels / pixels;
+
+    const averageBrightness =
+        totalBrightness / pixels;
+
+
+    /*
+       Himmel-/Wolkenbild:
+
+       - blauer Himmel
+       - helle Wolken
+       - weiße/graue Wolken
+       - ausreichende Helligkeit
+    */
+
+    const skyLike =
+        (
+            blueRatio > 0.08 &&
+            averageBrightness > 65
+        )
+        ||
+        (
+            brightRatio > 0.25 &&
+            neutralRatio > 0.10
+        )
+        ||
+        (
+            neutralRatio > 0.22 &&
+            averageBrightness > 75
+        );
+
+
+    /*
+       Komplett dunkle oder stark farbige
+       Innenaufnahmen werden nicht als
+       Himmel akzeptiert.
+    */
+
+    if (
+        darkRatio > 0.75 ||
+        averageBrightness < 35
+    ) {
+
+        return false;
+
+    }
+
+
+    return skyLike;
+
+}
+
+
+/* =========================================================
+   NEU:
+   KI-LABEL AUSWERTEN
+   ========================================================= */
+
+function isCloudRelatedLabel(label) {
+
+    if (!label) {
+        return false;
+    }
+
+    const text =
+        String(label)
+        .toLowerCase();
+
+
+    const keywords = [
+
+        "cloud",
+        "cloudy",
+        "sky",
+        "cumulus",
+        "cumulonimbus",
+        "thundercloud",
+        "thunderstorm",
+        "storm",
+        "rain",
+        "rainy",
+        "shower",
+        "nimbus",
+        "weather",
+        "fog",
+        "mist",
+        "stratus",
+        "cirrus",
+        "altocumulus",
+        "altostratus"
+
+    ];
+
+
+    return keywords.some(
+        keyword =>
+            text.includes(keyword)
+    );
+
+}
+
+
+/* =========================================================
+   KI ZU DWD-GATTUNG
    ========================================================= */
 
 function mapAIToCloud(aiResult) {
 
-    if (!aiResult || !aiResult.label) {
+    if (
+        !aiResult ||
+        !aiResult.label
+    ) {
+
         return null;
+
     }
 
 
     const label =
-        aiResult.label.toLowerCase();
-
-
-    /*
-       Die allgemeine MobileViT-KI kennt
-       nicht automatisch DWD-Gattungen.
-
-       Deshalb werden typische Begriffe
-       aus der KI-Ausgabe ausgewertet.
-    */
+        aiResult.label
+        .toLowerCase();
 
 
     if (
@@ -992,18 +1118,6 @@ function mapAIToCloud(aiResult) {
 
         return CLOUD_DATABASE.find(
             c => c.id === "cumulonimbus"
-        );
-
-    }
-
-
-    if (
-        label.includes("fog") ||
-        label.includes("mist")
-    ) {
-
-        return CLOUD_DATABASE.find(
-            c => c.id === "stratus"
         );
 
     }
@@ -1023,14 +1137,31 @@ function mapAIToCloud(aiResult) {
 
 
     if (
-        label.includes("cloud")
+        label.includes("fog") ||
+        label.includes("mist")
     ) {
 
-        /*
-           Allgemeine Wolke:
-           Cumulus als neutrale
-           Wolkengattung verwenden.
-        */
+        return CLOUD_DATABASE.find(
+            c => c.id === "stratus"
+        );
+
+    }
+
+
+    if (
+        label.includes("cirrus")
+    ) {
+
+        return CLOUD_DATABASE.find(
+            c => c.id === "cirrus"
+        );
+
+    }
+
+
+    if (
+        label.includes("cumulus")
+    ) {
 
         return CLOUD_DATABASE.find(
             c => c.id === "cumulus"
@@ -1040,9 +1171,24 @@ function mapAIToCloud(aiResult) {
 
 
     if (
-        label.includes("sky") ||
-        label.includes("cloudy") ||
-        label.includes("weather")
+        label.includes("stratus")
+    ) {
+
+        return CLOUD_DATABASE.find(
+            c => c.id === "stratus"
+        );
+
+    }
+
+
+    /*
+       Allgemeine Begriffe wie cloud/sky
+       werden zunächst als allgemeines
+       Wolkenmotiv behandelt.
+    */
+
+    if (
+        isCloudRelatedLabel(label)
     ) {
 
         return CLOUD_DATABASE.find(
@@ -1067,7 +1213,7 @@ function showScreen(screenId) {
         .querySelectorAll(".screen")
         .forEach(
             s =>
-            s.classList.remove("active")
+                s.classList.remove("active")
         );
 
 
@@ -1084,7 +1230,6 @@ function showScreen(screenId) {
         fetchCurrentWeather();
 
     }
-
     else {
 
         stopCamera();
@@ -1208,7 +1353,6 @@ function fetchCurrentWeather() {
                         );
 
                 }
-
                 else {
 
                     weatherText.textContent =
@@ -1217,8 +1361,7 @@ function fetchCurrentWeather() {
                 }
 
             }
-
-            catch (e) {
+            catch(e) {
 
                 weatherText.textContent =
                     "Netzwerkfehler beim Laden des Wetters";
@@ -1345,7 +1488,7 @@ async function startCamera() {
 
     }
 
-    catch (e) {
+    catch(e) {
 
         document
             .getElementById("status")
@@ -1365,7 +1508,7 @@ function stopCamera() {
             .getTracks()
             .forEach(
                 track =>
-                track.stop()
+                    track.stop()
             );
 
         cameraStream = null;
@@ -1479,8 +1622,7 @@ function loadGame() {
         }
 
     }
-
-    catch (e) {
+    catch(e) {
 
         gameData = {
             score:0,
@@ -1576,7 +1718,7 @@ function updateDisplays() {
 
 
 /* =========================================================
-   LOKALE REFERENZANALYSE
+   LOKALE DWD-ANALYSE
    ========================================================= */
 
 function classifyImage(imgElement) {
@@ -1760,7 +1902,245 @@ function classifyImage(imgElement) {
 
 
 /* =========================================================
-   FOTO AUFNEHMEN
+   NEU:
+   LOCKERE DWD-ZUORDNUNG FÜR HIMMELSBILDER
+   ========================================================= */
+
+function classifySkyImage(imgElement) {
+
+    const canvas =
+        document.createElement("canvas");
+
+    canvas.width = 64;
+    canvas.height = 64;
+
+    const ctx =
+        canvas.getContext(
+            "2d",
+            {
+                willReadFrequently:true
+            }
+        );
+
+    ctx.drawImage(
+        imgElement,
+        0,
+        0,
+        64,
+        64
+    );
+
+    const data =
+        ctx.getImageData(
+            0,
+            0,
+            64,
+            64
+        ).data;
+
+
+    let total = 0;
+    let brightnessSum = 0;
+    let blue = 0;
+    let whiteGrey = 0;
+    let dark = 0;
+
+    let values = [];
+
+
+    for (
+        let i = 0;
+        i < data.length;
+        i += 4
+    ) {
+
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        const brightness =
+            (r + g + b) / 3;
+
+        brightnessSum +=
+            brightness;
+
+        values.push(
+            brightness
+        );
+
+        total++;
+
+
+        if (
+            b > r * 1.05 &&
+            b > g * 1.02 &&
+            b > 65
+        ) {
+
+            blue++;
+
+        }
+
+
+        if (
+            brightness > 115 &&
+            Math.abs(r-g) < 35 &&
+            Math.abs(g-b) < 35
+        ) {
+
+            whiteGrey++;
+
+        }
+
+
+        if (
+            brightness < 45
+        ) {
+
+            dark++;
+
+        }
+
+    }
+
+
+    const avg =
+        brightnessSum / total;
+
+    const blueRatio =
+        blue / total;
+
+    const whiteGreyRatio =
+        whiteGrey / total;
+
+    const darkRatio =
+        dark / total;
+
+
+    /*
+       Ein Himmelsbild darf überwiegend
+       blau sein oder überwiegend aus
+       hellen weißen/grauen Bereichen
+       bestehen.
+    */
+
+    const looksLikeSky =
+        (
+            blueRatio >= 0.05 &&
+            avg >= 60
+        )
+        ||
+        (
+            whiteGreyRatio >= 0.12 &&
+            avg >= 65 &&
+            darkRatio < 0.65
+        );
+
+
+    if (!looksLikeSky) {
+
+        return null;
+
+    }
+
+
+    /*
+       Wir bestimmen aus der Bildstruktur
+       eine plausible DWD-Gattung.
+
+       Das ist weiterhin die lokale
+       Referenzanalyse und keine Behauptung,
+       dass MobileViT selbst diese Gattung
+       kennt.
+    */
+
+    let variance = 0;
+
+
+    for (
+        let i = 0;
+        i < values.length;
+        i++
+    ) {
+
+        variance +=
+            Math.pow(
+                values[i] - avg,
+                2
+            );
+
+    }
+
+
+    const stdDev =
+        Math.sqrt(
+            variance / values.length
+        );
+
+
+    /*
+       Sehr helle, relativ gleichmäßige
+       Wolken-/Himmelsbilder
+    */
+
+    if (
+        avg > 150 &&
+        stdDev < 35
+    ) {
+
+        return CLOUD_DATABASE.find(
+            c => c.id === "stratus"
+        );
+
+    }
+
+
+    /*
+       Helle Bilder mit deutlicher
+       Struktur -> Cumulus
+    */
+
+    if (
+        avg > 120 &&
+        stdDev >= 30
+    ) {
+
+        return CLOUD_DATABASE.find(
+            c => c.id === "cumulus"
+        );
+
+    }
+
+
+    /*
+       Dunklere strukturierte Wolken
+    */
+
+    if (
+        avg >= 60 &&
+        stdDev >= 35
+    ) {
+
+        return CLOUD_DATABASE.find(
+            c => c.id === "stratocumulus"
+        );
+
+    }
+
+
+    /*
+       Restliche erkennbare Himmelsbilder
+    */
+
+    return CLOUD_DATABASE.find(
+        c => c.id === "cumulus"
+    );
+
+}
+
+
+/* =========================================================
+   FOTO
    ========================================================= */
 
 function takePhoto() {
@@ -1791,9 +2171,7 @@ function takePhoto() {
 
 
     const ctx =
-        canvas.getContext(
-            "2d"
-        );
+        canvas.getContext("2d");
 
 
     ctx.drawImage(
@@ -1827,7 +2205,7 @@ function takePhoto() {
 
 
 /* =========================================================
-   DATEI LADEN
+   DATEI
    ========================================================= */
 
 function handleFile(event) {
@@ -1883,7 +2261,7 @@ function handleFile(event) {
 
 
 /* =========================================================
-   BILD ANALYSIEREN
+   BILDANALYSE
    ========================================================= */
 
 async function processCapturedImage(
@@ -1906,25 +2284,14 @@ async function processCapturedImage(
 
 
     aiStatus.textContent =
-        "🤖 KI analysiert Bild...";
+        "🤖 KI und Bildanalyse arbeiten...";
 
 
     /*
-       WICHTIGE ÄNDERUNG:
-
-       Die KI wird jetzt zuerst ausgewertet.
-       Wenn die KI eine passende Wolken-/Himmels-
-       bezeichnung liefert, wird dieses Ergebnis
-       tatsächlich verwendet.
-
-       Die alte Pixelanalyse wird nur noch als
-       zweite Möglichkeit verwendet.
+       1. KI
     */
 
-
     let aiResult = null;
-    let aiCloud = null;
-
 
     if (aiReady) {
 
@@ -1933,52 +2300,109 @@ async function processCapturedImage(
                 imgElement
             );
 
+    }
 
-        aiCloud =
-            mapAIToCloud(
-                aiResult
+
+    /*
+       2. Prüfen, ob die KI ein
+          Wolken-/Himmelsmotiv liefert.
+    */
+
+    const aiSaysCloud =
+        aiResult &&
+        isCloudRelatedLabel(
+            aiResult.label
+        );
+
+
+    /*
+       3. Bestehende DWD-Analyse
+    */
+
+    let matchedCloud =
+        classifyImage(
+            imgElement
+        );
+
+
+    let recognitionSource =
+        "DWD-Referenzanalyse";
+
+
+    /*
+       4. Wenn die alte strenge Analyse
+          nichts findet, kommt jetzt die
+          neue Himmel-/Wolkenanalyse.
+    */
+
+    if (!matchedCloud) {
+
+        matchedCloud =
+            classifySkyImage(
+                imgElement
             );
+
+
+        if (matchedCloud) {
+
+            recognitionSource =
+                "Bildanalyse";
+
+        }
 
     }
 
 
     /*
-       Falls die KI eine Wolke erkennt,
-       nehmen wir dieses Ergebnis.
-
-       Nur wenn die KI nichts Passendes liefert,
-       wird die bisherige lokale Analyse verwendet.
+       5. Wenn die KI ausdrücklich ein
+          Wolkenmotiv meldet, darf die
+          KI-Zuordnung verwendet werden.
     */
 
-    let matchedCloud =
-        aiCloud;
+    if (
+        aiSaysCloud
+    ) {
 
-
-    let analysisType =
-        "KI";
-
-
-    if (!matchedCloud) {
-
-        matchedCloud =
-            classifyImage(
-                imgElement
+        const aiCloud =
+            mapAIToCloud(
+                aiResult
             );
 
-        analysisType =
-            "lokale Analyse";
+
+        if (aiCloud) {
+
+            matchedCloud =
+                aiCloud;
+
+            recognitionSource =
+                "KI";
+
+        }
 
     }
 
 
-    aiStatus.textContent =
-        matchedCloud
-        ? (
-            analysisType === "KI"
-            ? "🤖 KI hat ein Wolkenmotiv erkannt"
-            : "ℹ️ Lokale Referenzanalyse"
-        )
-        : "⚠️ Keine eindeutige Wolke";
+    /*
+       Wenn weder Bildanalyse noch KI
+       einen Himmel erkennen, bleibt
+       das Bild eine Nicht-Erkennung.
+    */
+
+    if (
+        !matchedCloud
+    ) {
+
+        aiStatus.textContent =
+            "⚠️ Kein eindeutiges Wolkenmotiv erkannt.";
+
+    }
+    else {
+
+        aiStatus.textContent =
+            "☁️ Wolkenmotiv erkannt – " +
+            recognitionSource;
+
+    }
 
 
     const resultBox =
@@ -1993,13 +2417,13 @@ async function processCapturedImage(
         );
 
 
-    const retryBtn =
+    const retryButton =
         document.getElementById(
             "retryButton"
         );
 
 
-    const nextBtn =
+    const nextButton =
         document.getElementById(
             "nextButton"
         );
@@ -2007,19 +2431,15 @@ async function processCapturedImage(
 
     if (matchedCloud) {
 
-        document
-            .getElementById(
-                "resultIcon"
-            )
-            .textContent =
+        document.getElementById(
+            "resultIcon"
+        ).textContent =
             matchedCloud.icon;
 
 
-        document
-            .getElementById(
-                "resultName"
-            )
-            .textContent =
+        document.getElementById(
+            "resultName"
+        ).textContent =
             "🎯 " +
             matchedCloud.name +
             " erkannt";
@@ -2032,25 +2452,26 @@ async function processCapturedImage(
         if (aiResult) {
 
             description +=
-                "<br><br>🤖 KI-Erkennung: " +
+                "<br><br>🤖 KI-Ausgabe: " +
                 aiResult.label;
 
         }
 
 
-        document
-            .getElementById(
-                "resultDescription"
-            )
-            .innerHTML =
+        description +=
+            "<br>🔎 Erkennung: " +
+            recognitionSource;
+
+
+        document.getElementById(
+            "resultDescription"
+        ).innerHTML =
             description;
 
 
-        document
-            .getElementById(
-                "resultPoints"
-            )
-            .textContent =
+        document.getElementById(
+            "resultPoints"
+        ).textContent =
             "+" +
             matchedCloud.points +
             " Punkte";
@@ -2086,7 +2507,6 @@ async function processCapturedImage(
             "none";
 
     }
-
     else {
 
         resultBox.style.display =
@@ -2099,12 +2519,12 @@ async function processCapturedImage(
     }
 
 
-    retryBtn.classList.remove(
+    retryButton.classList.remove(
         "hidden"
     );
 
 
-    nextBtn.classList.remove(
+    nextButton.classList.remove(
         "hidden"
     );
 
@@ -2140,56 +2560,44 @@ function prepareNextCloud() {
         "block";
 
 
-    document
-        .getElementById(
-            "resultBox"
-        )
-        .style.display =
+    document.getElementById(
+        "resultBox"
+    ).style.display =
         "none";
 
 
-    document
-        .getElementById(
-            "noCloudBox"
-        )
-        .style.display =
+    document.getElementById(
+        "noCloudBox"
+    ).style.display =
         "none";
 
 
-    document
-        .getElementById(
-            "retryButton"
-        )
-        .classList.add(
-            "hidden"
-        );
+    document.getElementById(
+        "retryButton"
+    ).classList.add(
+        "hidden"
+    );
 
 
-    document
-        .getElementById(
-            "nextButton"
-        )
-        .classList.add(
-            "hidden"
-        );
+    document.getElementById(
+        "nextButton"
+    ).classList.add(
+        "hidden"
+    );
 
 
-    document
-        .getElementById(
-            "status"
-        )
-        .textContent =
+    document.getElementById(
+        "status"
+    ).textContent =
         "Richte die Kamera auf eine Wolke im Freien.";
 
 
-    document
-        .getElementById(
-            "aiStatus"
-        )
-        .textContent =
+    document.getElementById(
+        "aiStatus"
+    ).textContent =
         aiReady
         ? "🤖 KI bereit"
-        : "ℹ️ Lokale Analyse aktiv";
+        : "ℹ️ Bildanalyse aktiv";
 
 }
 
@@ -2232,4 +2640,3 @@ Dieser Text/Dieses Bild/Dieses Video/… wurde unter Zuhilfenahme einer Künstli
 
 </body>
 </html>
-```
