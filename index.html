@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -83,10 +84,39 @@ button.secondary {
     background: #26385f;
 }
 
+button:disabled {
+    background: #26385f;
+    color: #9eacc8;
+    cursor: wait;
+    transform: none;
+}
+
 .score-box {
     text-align: center;
     font-size: 20px;
     margin: 15px 0;
+}
+
+.weather-box {
+    background: #162653;
+    border-radius: 14px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.weather-title {
+    font-size: 15px;
+    color: #38bdf8;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.weather-info {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin: 4px 0;
+    line-height: 1.5;
 }
 
 .camera-box {
@@ -151,6 +181,14 @@ button.secondary {
     color: #cbd5e1;
 }
 
+.ai-status {
+    text-align: center;
+    font-size: 14px;
+    color: #38bdf8;
+    margin-top: 8px;
+    min-height: 22px;
+}
+
 .result {
     display: none;
     text-align: center;
@@ -171,6 +209,7 @@ button.secondary {
     color: #cbd5e1;
     font-size: 16px;
     margin-bottom: 15px;
+    line-height: 1.5;
 }
 
 .points {
@@ -229,395 +268,1752 @@ input[type=file] {
     font-weight: bold;
 }
 </style>
+
+<!-- =========================================================
+     TRANSFORMERS.JS – KI
+     ========================================================= -->
+<script type="module">
+
+import {
+    pipeline,
+    env
+} from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+
+env.allowLocalModels = false;
+
+window.transformersPipeline = pipeline;
+
+</script>
+
 </head>
 
 <body>
 
 <!-- START -->
 <section id="startScreen" class="screen active">
+
 <div class="container">
+
 <h1>☁ Wolkenjäger</h1>
-<div class="subtitle">DWD Internationaler Wolkenatlas (CC BY 4.0)</div>
+
+<div class="subtitle">
+DWD Internationaler Wolkenatlas (CC BY 4.0)
+</div>
 
 <div class="card">
-<div class="score-box">⭐ Punkte: <span id="startScore">0</span></div>
 
-<button onclick="startGame()">☁ Spiel starten</button>
-<button class="secondary" onclick="showClouds()">📚 DWD-Wolkengattungen</button>
-<button class="secondary" onclick="toggleRules()">📖 Regeln</button>
-<button class="secondary" onclick="toggleImpressum()">ℹ️ Impressum</button>
+<div class="score-box">
+⭐ Punkte: <span id="startScore">0</span>
+</div>
+
+<button id="startButton" disabled onclick="startGame()">
+⏳ KI wird geladen...
+</button>
+
+<button class="secondary" onclick="showClouds()">
+📚 DWD-Wolkengattungen
+</button>
+
+<button class="secondary" onclick="toggleRules()">
+📖 Regeln
+</button>
+
+<button class="secondary" onclick="toggleImpressum()">
+ℹ️ Impressum
+</button>
+
+<div id="aiStartStatus" class="ai-status">
+KI wird vorbereitet...
+</div>
+
 </div>
 
 <div id="rulesBox" class="card rules hidden">
+
 <h2>📖 Regeln &amp; Systematik</h2>
+
 <br>
-<p>Fotografiere eine Wolke im Freien oder lade ein Himmelsbild hoch.</p>
-<p>Das System gleicht die Aufnahme direkt mit den 10 klassischen Hauptgattungen des Internationalen Wolkenatlas ab. Es werden bewusst keine Schein-Prozentwerte angezeigt – entweder die Merkmale passen klar zu einer DWD-Gattung oder das Bild wird als ungültig abgewiesen.</p>
+
+<p>
+Fotografiere eine Wolke im Freien oder lade ein Himmelsbild hoch.
+</p>
+
+<p>
+Die lokale Bildanalyse und die KI unterstützen die Erkennung. Es werden bewusst keine Schein-Prozentwerte angezeigt.
+</p>
+
+<p>
+Die Aufnahme wird mit den 10 klassischen Hauptgattungen des Internationalen Wolkenatlas abgeglichen.
+</p>
+
 </div>
 
 <div id="impressumBox" class="card impressum hidden">
+
 <h2>ℹ️ Impressum</h2>
+
 <br>
+
 <p>Blankenhagen Spieleentwicklung</p>
 <p>Jörg Blankenhagen</p>
 <p>73614 Schorndorf</p>
+
 </div>
 
-<div class="small">Wolken erkennen · analysieren · Punkte sammeln</div>
+<div class="small">
+Wolken erkennen · analysieren · Punkte sammeln
+</div>
+
 </div>
 </section>
+
 
 <!-- SPIEL -->
 <section id="gameScreen" class="screen">
+
 <div class="container">
+
 <h1>☁ Nächste Wolke</h1>
 
-<div class="score-box">⭐ Punkte: <span id="gameScore">0</span></div>
+<div class="score-box">
+⭐ Punkte: <span id="gameScore">0</span>
+</div>
+
+
+<!-- WETTER -->
+
+<div class="card" style="padding: 12px; margin-bottom: 15px;">
+
+<div class="weather-box" style="margin: 0; padding: 10px;">
+
+<div class="weather-title">
+📍 Live-Wetter am Standort
+</div>
+
+<div id="locationText" class="weather-info">
+Bestimme Standort...
+</div>
+
+<div id="weatherText" class="weather-info">
+Lade Wetterdaten...
+</div>
+
+</div>
+
+</div>
+
 
 <div class="card">
+
 <div class="camera-box">
-<video id="camera" autoplay muted playsinline></video>
-<img id="preview" class="preview" alt="Aufgenommenes Wolkenbild">
+
+<video
+id="camera"
+autoplay
+muted
+playsinline>
+</video>
+
+<img
+id="preview"
+class="preview"
+alt="Aufgenommenes Wolkenbild">
+
 </div>
+
 
 <div class="zoom-box">
+
 <div class="zoom-title">
+
 <span>🔍 Kamerazoom</span>
-<span id="zoomValue" class="zoom-value">1,0×</span>
-</div>
-<input id="zoomSlider" class="zoom-slider" type="range" min="1" max="3" step="0.1" value="1" oninput="setCameraZoom(this.value)">
+
+<span id="zoomValue" class="zoom-value">
+1,0×
+</span>
+
 </div>
 
-<div id="status" class="status">Richte die Kamera auf eine Wolke im Freien.</div>
+<input
+id="zoomSlider"
+class="zoom-slider"
+type="range"
+min="1"
+max="3"
+step="0.1"
+value="1"
+oninput="setCameraZoom(this.value)">
 
-<button onclick="takePhoto()">📷 Wolke fotografieren</button>
+</div>
+
+
+<div id="status" class="status">
+Richte die Kamera auf eine Wolke im Freien.
+</div>
+
+
+<div id="aiStatus" class="ai-status">
+☁ KI bereit
+</div>
+
+
+<button onclick="takePhoto()">
+📷 Wolke fotografieren
+</button>
+
 
 <label class="upload">
+
 🖼️ Foto auswählen
-<input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+
+<input
+type="file"
+id="fileInput"
+accept="image/*"
+onchange="handleFile(event)">
+
 </label>
 
-<div id="databaseStatus" class="database-status">✅ DWD-Atlas Referenzbasis aktiv</div>
+
+<div id="databaseStatus" class="database-status">
+✅ DWD-Atlas Referenzbasis aktiv
 </div>
+
+</div>
+
 
 <!-- ERGEBNIS -->
+
 <div id="resultBox" class="card result">
-<div id="resultIcon" class="cloud-icon">☁️</div>
-<div id="resultName" class="cloud-name">Wolke</div>
-<div id="resultDescription" class="cloud-description"></div>
-<div id="resultPoints" class="points">+0 Punkte</div>
+
+<div id="resultIcon" class="cloud-icon">
+☁️
 </div>
+
+<div id="resultName" class="cloud-name">
+Wolke
+</div>
+
+<div id="resultDescription" class="cloud-description">
+</div>
+
+<div id="resultPoints" class="points">
++0 Punkte
+</div>
+
+</div>
+
 
 <!-- KEINE WOLKE -->
+
 <div id="noCloudBox" class="card result">
-<div class="cloud-icon">⚠️</div>
-<div class="cloud-name">Keine passende Wolke erkannt</div>
-<div class="cloud-description">Das Motiv entspricht keiner eindeutigen DWD-Wolkengattung (oder zeigt keinen freien Himmel).</div>
+
+<div class="cloud-icon">
+⚠️
 </div>
 
-<button id="retryButton" class="secondary hidden" onclick="prepareNextCloud()">📷 Noch einmal fotografieren</button>
-<button id="nextButton" class="hidden" onclick="prepareNextCloud()">➡️️ Nächste Wolke</button>
-<button class="secondary" onclick="showScreen('startScreen')">🏠 Zurück zur Startseite</button>
+<div class="cloud-name">
+Keine passende Wolke erkannt
+</div>
+
+<div class="cloud-description">
+Das Motiv entspricht keiner eindeutigen DWD-Wolkengattung oder zeigt keinen freien Himmel.
+</div>
+
+</div>
+
+
+<button
+id="retryButton"
+class="secondary hidden"
+onclick="prepareNextCloud()">
+
+📷 Noch einmal fotografieren
+
+</button>
+
+
+<button
+id="nextButton"
+class="hidden"
+onclick="prepareNextCloud()">
+
+➡ Nächste Wolke
+
+</button>
+
+
+<button
+class="secondary"
+onclick="showScreen('startScreen')">
+
+🏠 Zurück zur Startseite
+
+</button>
+
 </div>
 </section>
+
 
 <!-- ERKANNTE WOLKEN -->
+
 <section id="cloudsScreen" class="screen">
+
 <div class="container">
+
 <h1>📚 DWD-Gattungen</h1>
+
 <div class="card">
-<div class="score-box">⭐ Gesamtpunkte: <span id="cloudsScore">0</span></div>
-<div class="score-box">☁️ Erfasste Wolken: <span id="cloudsTotal">0</span></div>
+
+<div class="score-box">
+⭐ Gesamtpunkte:
+<span id="cloudsScore">0</span>
 </div>
+
+<div class="score-box">
+☁️ Erfasste Wolken:
+<span id="cloudsTotal">0</span>
+</div>
+
+</div>
+
 <div class="card">
+
 <div id="cloudList"></div>
+
 </div>
-<button class="secondary" onclick="showScreen('startScreen')">🏠 Zurück zur Startseite</button>
+
+<button
+class="secondary"
+onclick="showScreen('startScreen')">
+
+🏠 Zurück zur Startseite
+
+</button>
+
 </div>
 </section>
 
+
 <script>
+
 /* =========================================================
-   DWD WOLKENDATENBANK (INTERNATIONALER WOLKENATLAS)
+   DWD WOLKENDATENBANK
    ========================================================= */
+
 const CLOUD_DATABASE = [
-    { id:"cirrus", name:"Cirrus (Ci)", icon:"🌤️", description:"Hohe Federwolke (hohes Stockwerk).", points:25, minB: 0.35, maxB: 0.60, minVar: 20, maxVar: 45 },
-    { id:"cirrocumulus", name:"Cirrocumulus (Cc)", icon:"☁️", description:"Hohe Schäfchenwolke (hohes Stockwerk).", points:30, minB: 0.32, maxB: 0.55, minVar: 35, maxVar: 60 },
-    { id:"cirrostratus", name:"Cirrostratus (Cs)", icon:"🌥️", description:"Hohe Schleierwolke (hohes Stockwerk).", points:30, minB: 0.38, maxB: 0.65, minVar: 12, maxVar: 30 },
-    { id:"altocumulus", name:"Altocumulus (Ac)", icon:"☁️", description:"Grobe Schäfchenwolke (mittleres Stockwerk).", points:30, minB: 0.28, maxB: 0.48, minVar: 40, maxVar: 70 },
-    { id:"altostratus", name:"Altostratus (As)", icon:"🌥️", description:"Mittelhohe Schichtwolke (mittleres Stockwerk).", points:35, minB: 0.22, maxB: 0.40, minVar: 18, maxVar: 35 },
-    { id:"nimbostratus", name:"Nimbostratus (Ns)", icon:"🌧️", description:"Regen-Schichtwolke (ausgedehnte Schlechtwetterwolke).", points:40, minB: 0.08, maxB: 0.25, minVar: 15, maxVar: 35 },
-    { id:"stratocumulus", name:"Stratocumulus (Sc)", icon:"☁️", description:"Schicht-Haufenwolke (tiefes Stockwerk).", points:20, minB: 0.25, maxB: 0.45, minVar: 38, maxVar: 65 },
-    { id:"stratus", name:"Stratus (St)", icon:"🌫️", description:"Niedrige Schichtwolke / Hochnebel (tiefes Stockwerk).", points:15, minB: 0.20, maxB: 0.38, minVar: 8,  maxVar: 22 },
-    { id:"cumulus", name:"Cumulus (Cu)", icon:"☁️", description:"Haufenwolke / Schönwetterwolke (tiefes Stockwerk).", points:10, minB: 0.40, maxB: 0.70, minVar: 45, maxVar: 85 },
-    { id:"cumulonimbus", name:"Cumulonimbus (Cb)", icon:"⛈️", description:"Gewitterwolke mit Amboss (vertikal mächtig).", points:50, minB: 0.18, maxB: 0.35, minVar: 55, maxVar: 95 }
+
+    {
+        id:"cirrus",
+        name:"Cirrus (Ci)",
+        icon:"🌤️",
+        description:"Hohe Federwolke (hohes Stockwerk).",
+        points:25,
+        minB:0.35,
+        maxB:0.60,
+        minVar:20,
+        maxVar:45
+    },
+
+    {
+        id:"cirrocumulus",
+        name:"Cirrocumulus (Cc)",
+        icon:"☁️️",
+        description:"Hohe Schäfchenwolke (hohes Stockwerk).",
+        points:30,
+        minB:0.32,
+        maxB:0.55,
+        minVar:35,
+        maxVar:60
+    },
+
+    {
+        id:"cirrostratus",
+        name:"Cirrostratus (Cs)",
+        icon:"🌥️",
+        description:"Hohe Schleierwolke (hohes Stockwerk).",
+        points:30,
+        minB:0.38,
+        maxB:0.65,
+        minVar:12,
+        maxVar:30
+    },
+
+    {
+        id:"altocumulus",
+        name:"Altocumulus (Ac)",
+        icon:"☁️",
+        description:"Grobe Schäfchenwolke (mittleres Stockwerk).",
+        points:30,
+        minB:0.28,
+        maxB:0.48,
+        minVar:40,
+        maxVar:70
+    },
+
+    {
+        id:"altostratus",
+        name:"Altostratus (As)",
+        icon:"🌥️",
+        description:"Mittelhohe Schichtwolke (mittleres Stockwerk).",
+        points:35,
+        minB:0.22,
+        maxB:0.40,
+        minVar:18,
+        maxVar:35
+    },
+
+    {
+        id:"nimbostratus",
+        name:"Nimbostratus (Ns)",
+        icon:"🌧️",
+        description:"Regen-Schichtwolke (ausgedehnte Schlechtwetterwolke).",
+        points:40,
+        minB:0.08,
+        maxB:0.25,
+        minVar:15,
+        maxVar:35
+    },
+
+    {
+        id:"stratocumulus",
+        name:"Stratocumulus (Sc)",
+        icon:"☁️",
+        description:"Schicht-Haufenwolke (tiefes Stockwerk).",
+        points:20,
+        minB:0.25,
+        maxB:0.45,
+        minVar:38,
+        maxVar:65
+    },
+
+    {
+        id:"stratus",
+        name:"Stratus (St)",
+        icon:"🌫️️",
+        description:"Niedrige Schichtwolke / Hochnebel (tiefes Stockwerk).",
+        points:15,
+        minB:0.20,
+        maxB:0.38,
+        minVar:8,
+        maxVar:22
+    },
+
+    {
+        id:"cumulus",
+        name:"Cumulus (Cu)",
+        icon:"☁️",
+        description:"Haufenwolke / Schönwetterwolke (tiefes Stockwerk).",
+        points:10,
+        minB:0.40,
+        maxB:0.70,
+        minVar:45,
+        maxVar:85
+    },
+
+    {
+        id:"cumulonimbus",
+        name:"Cumulonimbus (Cb)",
+        icon:"⛈️",
+        description:"Gewitterwolke mit Amboss (vertikal mächtig).",
+        points:50,
+        minB:0.18,
+        maxB:0.35,
+        minVar:55,
+        maxVar:95
+    }
+
 ];
 
-let gameData = { score: 0, total: 0, clouds: {} };
+
+let gameData = {
+    score:0,
+    total:0,
+    clouds:{}
+};
+
 let cameraStream = null;
 let currentZoom = 1;
 
+let classifier = null;
+let aiReady = false;
+
+
 /* =========================================================
-   NAVIGATION & UI
+   KI LADEN
    ========================================================= */
-function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenId).classList.add('active');
-    if (screenId === 'gameScreen') {
-        startCamera();
-    } else {
-        stopCamera();
+
+async function loadAI() {
+
+    const startButton =
+        document.getElementById("startButton");
+
+    const aiStartStatus =
+        document.getElementById("aiStartStatus");
+
+
+    try {
+
+        if (
+            !window.transformersPipeline
+        ) {
+
+            throw new Error(
+                "Transformers.js konnte nicht geladen werden."
+            );
+
+        }
+
+
+        aiStartStatus.textContent =
+            "⏳ KI-Modell wird geladen...";
+
+
+        classifier =
+            await window.transformersPipeline(
+                "image-classification",
+                "Xenova/mobilevit-small"
+            );
+
+
+        aiReady = true;
+
+
+        startButton.disabled = false;
+
+        startButton.textContent =
+            "☁ Spiel starten (KI bereit)";
+
+
+        aiStartStatus.textContent =
+            "✅ KI bereit";
+
+
     }
+
+    catch (error) {
+
+        console.error(
+            "KI-Fehler:",
+            error
+        );
+
+
+        aiReady = false;
+
+
+        startButton.disabled = false;
+
+        startButton.textContent =
+            "☁ Spiel starten";
+
+
+        aiStartStatus.textContent =
+            "⚠️ KI konnte nicht geladen werden – lokale Analyse bleibt verfügbar.";
+
+    }
+
 }
+
+
+/* =========================================================
+   KI ANALYSE
+   ========================================================= */
+
+async function analyzeWithAI(imgElement) {
+
+    if (
+        !classifier ||
+        !aiReady
+    ) {
+
+        return null;
+
+    }
+
+
+    try {
+
+        const results =
+            await classifier(
+                imgElement
+            );
+
+
+        if (
+            results &&
+            results.length > 0
+        ) {
+
+            return results[0];
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "KI-Analyse Fehler:",
+            error
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+function showScreen(screenId) {
+
+    document
+        .querySelectorAll('.screen')
+        .forEach(
+            s =>
+            s.classList.remove('active')
+        );
+
+
+    document
+        .getElementById(screenId)
+        .classList.add('active');
+
+
+    if (
+        screenId === 'gameScreen'
+    ) {
+
+        startCamera();
+
+        fetchCurrentWeather();
+
+    }
+
+    else {
+
+        stopCamera();
+
+    }
+
+}
+
 
 function toggleRules() {
-    document.getElementById('rulesBox').classList.toggle('hidden');
+
+    document
+        .getElementById('rulesBox')
+        .classList.toggle('hidden');
+
 }
+
 
 function toggleImpressum() {
-    document.getElementById('impressumBox').classList.toggle('hidden');
+
+    document
+        .getElementById('impressumBox')
+        .classList.toggle('hidden');
+
 }
+
 
 function showClouds() {
+
     updateDisplays();
-    showScreen('cloudsScreen');
+
+    showScreen(
+        'cloudsScreen'
+    );
+
 }
+
 
 function startGame() {
+
     loadGame();
-    showScreen('gameScreen');
+
+    showScreen(
+        'gameScreen'
+    );
+
 }
+
 
 /* =========================================================
-   KAMERA & ZOOM
+   WETTER – OPEN-METEO
    ========================================================= */
-async function startCamera() {
-    try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment' },
-            audio: false
-        });
-        const video = document.getElementById('camera');
-        video.srcObject = cameraStream;
-        document.getElementById('status').textContent = "Richte die Kamera auf eine Wolke im Freien.";
-    } catch (e) {
-        document.getElementById('status').textContent = "Kamera nicht verfügbar – bitte Foto hochladen.";
+
+function fetchCurrentWeather() {
+
+    const locText =
+        document.getElementById(
+            "locationText"
+        );
+
+    const weatherText =
+        document.getElementById(
+            "weatherText"
+        );
+
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        locText.textContent =
+            "Standort wird nicht unterstützt";
+
+        weatherText.textContent =
+            "Wetterdaten nicht verfügbar";
+
+        return;
+
     }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        async (position) => {
+
+            const lat =
+                position.coords.latitude;
+
+            const lon =
+                position.coords.longitude;
+
+
+            locText.textContent =
+                `📍 Position: ${lat.toFixed(2)}°, ${lon.toFixed(2)}°`;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,wind_speed_10m&timezone=auto`
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    data &&
+                    data.current
+                ) {
+
+                    const cw =
+                        data.current;
+
+
+                    const wetter =
+                        getWeatherText(
+                            cw.weather_code
+                        );
+
+
+                    weatherText.innerHTML =
+                        `🌡️ ${cw.temperature_2m}°C | 💨 Wind: ${cw.wind_speed_10m} km/h<br>` +
+                        `☁️ Bewölkung: ${cw.cloud_cover}% | 💧 Luftfeuchte: ${cw.relative_humidity_2m}%<br>` +
+                        wetter;
+
+                }
+
+                else {
+
+                    weatherText.textContent =
+                        "Wetterdaten konnten nicht geladen werden";
+
+                }
+
+            }
+
+            catch (e) {
+
+                console.error(
+                    "Wetterfehler:",
+                    e
+                );
+
+
+                weatherText.textContent =
+                    "Netzwerkfehler beim Laden des Wetters";
+
+            }
+
+        },
+
+
+        (error) => {
+
+            locText.textContent =
+                "Standortzugriff nicht erlaubt/aktiv";
+
+            weatherText.textContent =
+                "Wetterabfrage übersprungen";
+
+        },
+
+
+        {
+            timeout:8000
+        }
+
+    );
+
 }
+
+
+/* =========================================================
+   WETTERTEXT
+   ========================================================= */
+
+function getWeatherText(code) {
+
+    if (code === 0)
+        return "☀️ Klarer Himmel";
+
+    if (code === 1)
+        return "🌤️ Überwiegend klar";
+
+    if (code === 2)
+        return "⛅ Teilweise bewölkt";
+
+    if (code === 3)
+        return "☁️ Bedeckt";
+
+    if (
+        code === 45 ||
+        code === 48
+    )
+        return "🌫️ Nebel";
+
+    if (
+        code >= 51 &&
+        code <= 55
+    )
+        return "🌦️ Nieselregen";
+
+    if (
+        code >= 61 &&
+        code <= 65
+    )
+        return "🌧️ Regen";
+
+    if (
+        code >= 71 &&
+        code <= 77
+    )
+        return "🌨️ Schnee";
+
+    if (
+        code >= 80 &&
+        code <= 82
+    )
+        return "🌦️ Regenschauer";
+
+    if (
+        code === 85 ||
+        code === 86
+    )
+        return "🌨️ Schneeschauer";
+
+    if (code >= 95)
+        return "⛈️ Gewitter";
+
+    return "🌤️ Wetterlage unbekannt";
+
+}
+
+
+/* =========================================================
+   KAMERA
+   ========================================================= */
+
+async function startCamera() {
+
+    try {
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video:{
+                    facingMode:'environment'
+                },
+
+                audio:false
+
+            });
+
+
+        const video =
+            document.getElementById(
+                'camera'
+            );
+
+
+        video.srcObject =
+            cameraStream;
+
+
+        document
+            .getElementById('status')
+            .textContent =
+            "Richte die Kamera auf eine Wolke im Freien.";
+
+    }
+
+    catch (e) {
+
+        document
+            .getElementById('status')
+            .textContent =
+            "Kamera nicht verfügbar – bitte Foto hochladen.";
+
+    }
+
+}
+
 
 function stopCamera() {
+
     if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                track =>
+                track.stop()
+            );
+
         cameraStream = null;
+
     }
+
 }
 
+
+/* =========================================================
+   ZOOM
+   ========================================================= */
+
 function setCameraZoom(value) {
-    currentZoom = parseFloat(value) || 1;
-    const video = document.getElementById("camera");
-    const preview = document.getElementById("preview");
-    const zoomValue = document.getElementById("zoomValue");
-    
-    if (video) video.style.transform = "scale(" + currentZoom + ")";
-    if (preview && preview.style.display !== "none") preview.style.transform = "scale(" + currentZoom + ")";
-    if (zoomValue) zoomValue.textContent = currentZoom.toFixed(1).replace(".", ",") + "×";
+
+    currentZoom =
+        parseFloat(value) || 1;
+
+
+    const video =
+        document.getElementById(
+            "camera"
+        );
+
+    const preview =
+        document.getElementById(
+            "preview"
+        );
+
+    const zoomValue =
+        document.getElementById(
+            "zoomValue"
+        );
+
+
+    if (video)
+        video.style.transform =
+            "scale(" +
+            currentZoom +
+            ")";
+
+
+    if (
+        preview &&
+        preview.style.display !== "none"
+    ) {
+
+        preview.style.transform =
+            "scale(" +
+            currentZoom +
+            ")";
+
+    }
+
+
+    if (zoomValue) {
+
+        zoomValue.textContent =
+            currentZoom
+                .toFixed(1)
+                .replace(".", ",") +
+            "×";
+
+    }
+
 }
+
 
 /* =========================================================
    SPIELSTAND
    ========================================================= */
+
 function saveGame() {
-    localStorage.setItem("wolkenjaeger_dwd_spielstand", JSON.stringify(gameData));
+
+    localStorage.setItem(
+        "wolkenjaeger_dwd_spielstand",
+        JSON.stringify(gameData)
+    );
+
 }
+
 
 function loadGame() {
+
     try {
-        const saved = localStorage.getItem("wolkenjaeger_dwd_spielstand");
+
+        const saved =
+            localStorage.getItem(
+                "wolkenjaeger_dwd_spielstand"
+            );
+
+
         if (saved) {
-            const parsed = JSON.parse(saved);
-            gameData.score = Number(parsed.score) || 0;
-            gameData.total = Number(parsed.total) || 0;
-            gameData.clouds = parsed.clouds || {};
+
+            const parsed =
+                JSON.parse(saved);
+
+
+            gameData.score =
+                Number(parsed.score) || 0;
+
+            gameData.total =
+                Number(parsed.total) || 0;
+
+            gameData.clouds =
+                parsed.clouds || {};
+
         }
-    } catch (e) {
-        gameData = { score: 0, total: 0, clouds: {} };
+
     }
+
+    catch (e) {
+
+        gameData = {
+            score:0,
+            total:0,
+            clouds:{}
+        };
+
+    }
+
+
     updateDisplays();
+
 }
+
 
 function updateDisplays() {
-    document.getElementById("startScore").textContent = gameData.score;
-    document.getElementById("gameScore").textContent = gameData.score;
-    document.getElementById("cloudsScore").textContent = gameData.score;
-    document.getElementById("cloudsTotal").textContent = gameData.total;
-    
-    const list = document.getElementById("cloudList");
+
+    document.getElementById(
+        "startScore"
+    ).textContent =
+        gameData.score;
+
+
+    document.getElementById(
+        "gameScore"
+    ).textContent =
+        gameData.score;
+
+
+    document.getElementById(
+        "cloudsScore"
+    ).textContent =
+        gameData.score;
+
+
+    document.getElementById(
+        "cloudsTotal"
+    ).textContent =
+        gameData.total;
+
+
+    const list =
+        document.getElementById(
+            "cloudList"
+        );
+
+
     if (!list) return;
+
+
     list.innerHTML = "";
-    CLOUD_DATABASE.forEach(cloud => {
-        const count = Number(gameData.clouds[cloud.id]) || 0;
-        const item = document.createElement("div");
-        item.className = "list-item";
-        item.innerHTML = "<span>" + cloud.icon + " " + cloud.name + "</span><strong>" + count + "</strong>";
-        list.appendChild(item);
-    });
+
+
+    CLOUD_DATABASE.forEach(
+        cloud => {
+
+            const count =
+                Number(
+                    gameData.clouds[
+                        cloud.id
+                    ]
+                ) || 0;
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "list-item";
+
+
+            item.innerHTML =
+                "<span>" +
+                cloud.icon +
+                " " +
+                cloud.name +
+                "</span><strong>" +
+                count +
+                "</strong>";
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+    );
+
 }
 
+
 /* =========================================================
-   DWD-REFERENZ-ABGLEICH (OHNE SCHEIN-PROZENTE)
+   LOKALE BILDANALYSE
    ========================================================= */
+
 function classifyImage(imgElement) {
-    const canvas = document.createElement("canvas");
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+
     canvas.width = 64;
     canvas.height = 64;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    ctx.drawImage(imgElement, 0, 0, 64, 64);
-    const imgData = ctx.getImageData(0, 0, 64, 64).data;
+
+
+    const ctx =
+        canvas.getContext(
+            "2d",
+            {
+                willReadFrequently:true
+            }
+        );
+
+
+    ctx.drawImage(
+        imgElement,
+        0,
+        0,
+        64,
+        64
+    );
+
+
+    const imgData =
+        ctx.getImageData(
+            0,
+            0,
+            64,
+            64
+        ).data;
+
 
     let totalBrightness = 0;
     let blueCount = 0;
     let warmOrDarkCount = 0;
     let variance = 0;
-    let pixels = 64 * 64;
+
+    let pixels =
+        64 * 64;
+
     let brightnessValues = [];
 
-    for (let i = 0; i < imgData.length; i += 4) {
-        let r = imgData[i], g = imgData[i+1], b = imgData[i+2];
-        let bright = (r + g + b) / 3;
-        totalBrightness += bright;
-        brightnessValues.push(bright);
 
-        // Filter gegen Innenräume, Gesichter, Hauswände, Holz oder Boden (starke Rot/Warm-dominanz)
-        if (r > b + 20 && r > 60) {
+    for (
+        let i = 0;
+        i < imgData.length;
+        i += 4
+    ) {
+
+        let r =
+            imgData[i];
+
+        let g =
+            imgData[i + 1];
+
+        let b =
+            imgData[i + 2];
+
+
+        let bright =
+            (r + g + b) / 3;
+
+
+        totalBrightness +=
+            bright;
+
+
+        brightnessValues.push(
+            bright
+        );
+
+
+        if (
+            r > b + 20 &&
+            r > 60
+        ) {
+
             warmOrDarkCount++;
+
         }
 
-        // Himmelsbläue-Anteil
-        if (b > r + 5 && b > g + 5) {
+
+        if (
+            b > r + 5 &&
+            b > g + 5
+        ) {
+
             blueCount++;
+
         }
+
     }
 
-    let avgBrightness = totalBrightness / pixels;
-    let blueRatio = blueCount / pixels;
-    let warmRatio = warmOrDarkCount / pixels;
 
-    for (let i = 0; i < brightnessValues.length; i++) {
-        variance += Math.pow(brightnessValues[i] - avgBrightness, 2);
+    let avgBrightness =
+        totalBrightness /
+        pixels;
+
+
+    let blueRatio =
+        blueCount /
+        pixels;
+
+
+    let warmRatio =
+        warmOrDarkCount /
+        pixels;
+
+
+    for (
+        let i = 0;
+        i < brightnessValues.length;
+        i++
+    ) {
+
+        variance +=
+            Math.pow(
+                brightnessValues[i] -
+                avgBrightness,
+                2
+            );
+
     }
-    let stdDev = Math.sqrt(variance / pixels);
 
-    // Grundlegender Ausschluss von Nicht-Himmel-Motiven
-    if (warmRatio > 0.15 || avgBrightness < 25) {
+
+    let stdDev =
+        Math.sqrt(
+            variance /
+            pixels
+        );
+
+
+    if (
+        warmRatio > 0.15 ||
+        avgBrightness < 25
+    ) {
+
         return null;
+
     }
 
-    // Exakter Abgleich gegen die DWD-Gattungsparameter
+
     let matchedCloud = null;
 
-    for (let i = 0; i < CLOUD_DATABASE.length; i++) {
-        let cloud = CLOUD_DATABASE[i];
+
+    for (
+        let i = 0;
+        i < CLOUD_DATABASE.length;
+        i++
+    ) {
+
+        let cloud =
+            CLOUD_DATABASE[i];
+
+
         if (
-            blueRatio >= cloud.minB && blueRatio <= cloud.maxB &&
-            stdDev >= cloud.minVar && stdDev <= cloud.maxVar
+
+            blueRatio >= cloud.minB &&
+            blueRatio <= cloud.maxB &&
+
+            stdDev >= cloud.minVar &&
+            stdDev <= cloud.maxVar
+
         ) {
-            matchedCloud = cloud;
-            break; // Eindeutiger Treffer nach DWD-Klassifikation
+
+            matchedCloud =
+                cloud;
+
+            break;
+
         }
+
     }
 
+
     return matchedCloud;
+
 }
+
 
 /* =========================================================
-   FOTO AUFNEHMEN / VERARBEITEN
+   FOTO
    ========================================================= */
+
 function takePhoto() {
-    const video = document.getElementById("camera");
-    const preview = document.getElementById("preview");
-    
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    preview.src = canvas.toDataURL("image/jpeg");
-    preview.style.display = "block";
-    video.style.display = "none";
+    const video =
+        document.getElementById(
+            "camera"
+        );
 
-    processCapturedImage(preview);
+    const preview =
+        document.getElementById(
+            "preview"
+        );
+
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+
+    canvas.width =
+        video.videoWidth ||
+        640;
+
+
+    canvas.height =
+        video.videoHeight ||
+        480;
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    preview.src =
+        canvas.toDataURL(
+            "image/jpeg"
+        );
+
+
+    preview.style.display =
+        "block";
+
+
+    video.style.display =
+        "none";
+
+
+    processCapturedImage(
+        preview
+    );
+
 }
+
 
 function handleFile(event) {
-    const file = event.target.files[0];
+
+    const file =
+        event.target.files[0];
+
+
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById("preview");
-        preview.src = e.target.result;
-        preview.style.display = "block";
-        document.getElementById("camera").style.display = "none";
-        processCapturedImage(preview);
-    };
-    reader.readAsDataURL(file);
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e) {
+
+            const preview =
+                document.getElementById(
+                    "preview"
+                );
+
+
+            preview.src =
+                e.target.result;
+
+
+            preview.style.display =
+                "block";
+
+
+            document
+                .getElementById(
+                    "camera"
+                )
+                .style.display =
+                "none";
+
+
+            processCapturedImage(
+                preview
+            );
+
+        };
+
+
+    reader.readAsDataURL(
+        file
+    );
+
 }
 
-function processCapturedImage(imgElement) {
-    document.getElementById("status").textContent = "Analysiere Wolkenstruktur nach DWD-Atlas...";
-    
-    setTimeout(() => {
-        const matchedCloud = classifyImage(imgElement);
-        const resultBox = document.getElementById("resultBox");
-        const noCloudBox = document.getElementById("noCloudBox");
-        const retryBtn = document.getElementById("retryButton");
-        const nextBtn = document.getElementById("nextButton");
 
-        if (matchedCloud) {
-            document.getElementById("resultIcon").textContent = matchedCloud.icon;
-            document.getElementById("resultName").textContent = "🎯 " + matchedCloud.name + " erkannt";
-            document.getElementById("resultDescription").textContent = matchedCloud.description;
-            document.getElementById("resultPoints").textContent = "+" + matchedCloud.points + " Punkte";
-            
-            gameData.score += matchedCloud.points;
-            gameData.total += 1;
-            gameData.clouds[matchedCloud.id] = (gameData.clouds[matchedCloud.id] || 0) + 1;
-            saveGame();
-            updateDisplays();
+/* =========================================================
+   BILD VERARBEITEN
+   ========================================================= */
 
-            resultBox.style.display = "block";
-            noCloudBox.style.display = "none";
-        } else {
-            resultBox.style.display = "none";
-            noCloudBox.style.display = "block";
-        }
+async function processCapturedImage(
+    imgElement
+) {
 
-        retryBtn.classList.remove("hidden");
-        nextBtn.classList.remove("hidden");
-        document.getElementById("status").textContent = "Analyse abgeschlossen.";
-    }, 600);
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+    const aiStatus =
+        document.getElementById(
+            "aiStatus"
+        );
+
+
+    status.textContent =
+        "Analysiere Wolkenstruktur...";
+
+
+    aiStatus.textContent =
+        "🤖 KI analysiert Bild...";
+
+
+    let aiResult = null;
+
+
+    if (aiReady) {
+
+        aiResult =
+            await analyzeWithAI(
+                imgElement
+            );
+
+    }
+
+
+    aiStatus.textContent =
+        aiResult
+        ? "🤖 KI-Analyse abgeschlossen"
+        : "ℹ️ Lokale Analyse aktiv";
+
+
+    setTimeout(
+        () => {
+
+            const matchedCloud =
+                classifyImage(
+                    imgElement
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            const noCloudBox =
+                document.getElementById(
+                    "noCloudBox"
+                );
+
+
+            const retryBtn =
+                document.getElementById(
+                    "retryButton"
+                );
+
+
+            const nextBtn =
+                document.getElementById(
+                    "nextButton"
+                );
+
+
+            if (matchedCloud) {
+
+                document
+                    .getElementById(
+                        "resultIcon"
+                    )
+                    .textContent =
+                    matchedCloud.icon;
+
+
+                document
+                    .getElementById(
+                        "resultName"
+                    )
+                    .textContent =
+                    "🎯 " +
+                    matchedCloud.name +
+                    " erkannt";
+
+
+                let description =
+                    matchedCloud.description;
+
+
+                if (aiResult) {
+
+                    description +=
+                        "<br><br>🤖 KI-Bildanalyse: " +
+                        aiResult.label;
+
+                }
+
+
+                document
+                    .getElementById(
+                        "resultDescription"
+                    )
+                    .innerHTML =
+                    description;
+
+
+                document
+                    .getElementById(
+                        "resultPoints"
+                    )
+                    .textContent =
+                    "+" +
+                    matchedCloud.points +
+                    " Punkte";
+
+
+                gameData.score +=
+                    matchedCloud.points;
+
+
+                gameData.total += 1;
+
+
+                gameData.clouds[
+                    matchedCloud.id
+                ] =
+                    (
+                        gameData.clouds[
+                            matchedCloud.id
+                        ] || 0
+                    ) + 1;
+
+
+                saveGame();
+
+                updateDisplays();
+
+
+                resultBox.style.display =
+                    "block";
+
+
+                noCloudBox.style.display =
+                    "none";
+
+            }
+
+            else {
+
+                resultBox.style.display =
+                    "none";
+
+
+                noCloudBox.style.display =
+                    "block";
+
+            }
+
+
+            retryBtn.classList.remove(
+                "hidden"
+            );
+
+
+            nextBtn.classList.remove(
+                "hidden"
+            );
+
+
+            status.textContent =
+                "Analyse abgeschlossen.";
+
+        },
+        300
+    );
+
 }
+
+
+/* =========================================================
+   NÄCHSTE WOLKE
+   ========================================================= */
 
 function prepareNextCloud() {
-    const video = document.getElementById("camera");
-    const preview = document.getElementById("preview");
-    
-    preview.style.display = "none";
-    video.style.display = "block";
-    
-    document.getElementById("resultBox").style.display = "none";
-    document.getElementById("noCloudBox").style.display = "none";
-    document.getElementById("retryButton").classList.add("hidden");
-    document.getElementById("nextButton").classList.add("hidden");
-    document.getElementById("status").textContent = "Richte die Kamera auf eine Wolke im Freien.";
+
+    const video =
+        document.getElementById(
+            "camera"
+        );
+
+    const preview =
+        document.getElementById(
+            "preview"
+        );
+
+
+    preview.style.display =
+        "none";
+
+
+    video.style.display =
+        "block";
+
+
+    document
+        .getElementById(
+            "resultBox"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "noCloudBox"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "retryButton"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "nextButton"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "status"
+        )
+        .textContent =
+        "Richte die Kamera auf eine Wolke im Freien.";
+
+
+    document
+        .getElementById(
+            "aiStatus"
+        )
+        .textContent =
+        aiReady
+        ? "🤖 KI bereit"
+        : "ℹ️ Lokale Analyse aktiv";
+
 }
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        loadGame();
+
+        loadAI();
+
+    }
+);
+
 </script>
 
-<hr style="margin: 40px 0; border: 0; border-top: 1px solid #26385f;">
-<p style="text-align: center; color: #9eacc8; font-size: 13px;">
-    Dieser Text/Dieses Bild/Dieses Video/… wurde unter Zuhilfenahme einer Künstlichen Intelligenz erstellt und von einem Menschen überprüft.
+
+<hr style="
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid #26385f;
+">
+
+<p style="
+    text-align: center;
+    color: #9eacc8;
+    font-size: 13px;
+">
+
+Dieser Text/Dieses Bild/Dieses Video/… wurde unter Zuhilfenahme einer Künstlichen Intelligenz erstellt und von einem Menschen überprüft.
+
 </p>
 
 </body>
 </html>
+```
