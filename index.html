@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
-<title>Wolkenjäger – DWD &amp; Phantasie Edition</title>
+<title>Wolkenjäger – DWD &amp; Tagesaufgaben</title>
 
 <style>
 * {
@@ -93,6 +93,28 @@ button:disabled {
     text-align: center;
     font-size: 20px;
     margin: 15px 0;
+}
+
+.quest-card {
+    background: linear-gradient(135deg, #1e3a8a, #101d3f);
+    border: 1px solid #38bdf8;
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.quest-title {
+    font-size: 16px;
+    color: #38bdf8;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.quest-text {
+    font-size: 15px;
+    color: #e0f2fe;
+    margin-bottom: 8px;
 }
 
 .weather-box {
@@ -328,12 +350,19 @@ window.transformersPipeline = pipeline;
 <div class="container">
 <h1>☁ Wolkenjäger</h1>
 <div class="subtitle">
-DWD Internationaler Wolkenatlas (CC BY 4.0) &amp; Phantasie-Formen
+DWD &amp; Phantasie Edition mit Tagesaufgabe
 </div>
 
 <div class="card">
 <div class="score-box">
 ⭐ Punkte: <span id="startScore">0</span>
+</div>
+
+<!-- TAGESAUFGABE AUF DEM STARTBILDSCHIRM -->
+<div class="quest-card">
+<div class="quest-title">🎯 Heutige Tagesaufgabe</div>
+<div id="startQuestText" class="quest-text">Lade Aufgabe...</div>
+<div id="startQuestProgress" style="font-size: 13px; color: #38bdf8;">Fortschritt: 0 / 0</div>
 </div>
 
 <button id="startButton" disabled onclick="startGame()">
@@ -361,8 +390,8 @@ KI wird vorbereitet...
 <h2>📖 Regeln &amp; Systematik</h2>
 <br>
 <p>Fotografiere eine Wolke im Freien oder lade ein Himmelsbild hoch.</p>
-<p>Das Bild wird mit der lokalen KI analysiert und mit der vorhandenen DWD-Referenzbasis verglichen.</p>
-<p>Wähle anschließend die erkannte Form (Tier, Gebäude, Fahrzeug, Mensch oder Fantasie), um Bonuspunkte zu sammeln!</p>
+<p>Das Bild wird analysiert und du bestimmst deine Entdeckung (Tier, Gebäude, Fahrzeug, Mensch oder Fantasie).</p>
+<p>Erfülle jeden Tag die neue Tagesaufgabe für Extrapunkte!</p>
 </div>
 
 <div id="impressumBox" class="card impressum hidden">
@@ -375,7 +404,7 @@ KI wird vorbereitet...
 </div>
 
 <div class="small">
-Wolken erkennen · analysieren · formen deuten · Punkte sammeln
+Wolken erkennen · formen deuten · Tagesaufgaben lösen
 </div>
 </div>
 </section>
@@ -389,6 +418,13 @@ Wolken erkennen · analysieren · formen deuten · Punkte sammeln
 
 <div class="score-box">
 ⭐ Punkte: <span id="gameScore">0</span>
+</div>
+
+<!-- TAGESAUFGABE IM SPIELSCREEN -->
+<div class="quest-card" style="margin-bottom: 15px;">
+<div class="quest-title">🎯 Heutige Aufgabe</div>
+<div id="gameQuestText" class="quest-text">Lade Aufgabe...</div>
+<div id="gameQuestProgress" style="font-size: 13px; color: #38bdf8;">Fortschritt: 0 / 0</div>
 </div>
 
 <div class="card" style="padding: 12px; margin-bottom: 15px;">
@@ -437,7 +473,7 @@ Richte die Kamera auf eine Wolke im Freien.
 </label>
 
 <div id="databaseStatus" class="database-status">
-✅ DWD-Atlas &amp; Phantasie-Modus aktiv
+✅ DWD-Atlas &amp; Tagesaufgaben aktiv
 </div>
 </div>
 
@@ -510,7 +546,7 @@ Richte die Kamera auf eine Wolke im Freien.
 
 <script>
 /* =========================================================
-   DWD WOLKENDATENBANK
+   DWD WOLKENDATENBANK & TAGESAUFGABEN
    ========================================================= */
 const CLOUD_DATABASE = [
 { id:"cirrus", name:"Cirrus (Ci)", icon:"🌤️", description:"Hohe Federwolke (hohes Stockwerk).", points:25, minB:0.35, maxB:0.60, minVar:20, maxVar:45 },
@@ -525,13 +561,23 @@ const CLOUD_DATABASE = [
 { id:"cumulonimbus", name:"Cumulonimbus (Cb)", icon:"⛈️", description:"Gewitterwolke mit großer vertikaler Ausdehnung.", points:50, minB:0.18, maxB:0.35, minVar:55, maxVar:95 }
 ];
 
-let gameData = { score: 0, total: 0, clouds: {} };
+/* TAGESAUFGABEN-POOL (Wechselt automatisch pro Kalendertag) */
+const QUEST_POOL = [
+    { targetType: "Tier", targetName: "Tiere", count: 2, reward: 50, text: "Finde heute 2 Tiere in den Wolken!" },
+    { targetType: "Gebäude", targetName: "Gebäude", count: 2, reward: 50, text: "Finde heute 2 Gebäude in den Wolken!" },
+    { targetType: "Fahrzeug", targetName: "Fahrzeuge", count: 1, reward: 40, text: "Finde heute 1 Fahrzeug in den Wolken!" },
+    { targetType: "Mensch", targetName: "Menschen", count: 2, reward: 50, text: "Finde heute 2 Gesichter oder Menschen!" },
+    { targetType: "Fantasie", targetName: "Fantasie-Effekte", count: 2, reward: 60, text: "Finde heute 2 magische Fantasie-Formen!" }
+];
+
+let gameData = { score: 0, total: 0, clouds: {}, questDate: "", questCurrent: 0, questCompleted: false };
 let cameraStream = null;
 let currentZoom = 1;
 let classifier = null;
 let aiReady = false;
 let pendingMatchedCloud = null;
 let pendingAiResult = null;
+let activeQuest = null;
 
 /* =========================================================
    KI LADEN
@@ -568,7 +614,45 @@ async function loadAI() {
 window.addEventListener("DOMContentLoaded", () => {
     loadAI();
     loadGame();
+    setupDailyQuest();
 });
+
+/* =========================================================
+   TAGESAUFGABEN-LOGIK
+   ========================================================= */
+function setupDailyQuest() {
+    const todayStr = new Date().toDateString();
+
+    if (gameData.questDate !== todayStr) {
+        // Neuer Tag -> Neue Aufgabe anhand des Tages-Index bestimmen
+        const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % QUEST_POOL.length;
+        gameData.questDate = todayStr;
+        gameData.questCurrent = 0;
+        gameData.questCompleted = false;
+        saveGame();
+    }
+
+    const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % QUEST_POOL.length;
+    activeQuest = QUEST_POOL[dayIndex];
+    updateQuestDisplay();
+}
+
+function updateQuestDisplay() {
+    const text = activeQuest ? activeQuest.text : "";
+    const targetCount = activeQuest ? activeQuest.count : 1;
+    const current = gameData.questCompleted ? targetCount : (gameData.questCurrent || 0);
+    const progressStr = `Fortschritt: ${current} / ${targetCount} ${gameData.questCompleted ? "✅ (Erfüllt + " + activeQuest.reward + " Pkt.)" : ""}`;
+
+    const st = document.getElementById("startQuestText");
+    const sp = document.getElementById("startQuestProgress");
+    const gt = document.getElementById("gameQuestText");
+    const gp = document.getElementById("gameQuestProgress");
+
+    if (st) st.textContent = text;
+    if (sp) sp.textContent = progressStr;
+    if (gt) gt.textContent = text;
+    if (gp) gp.textContent = progressStr;
+}
 
 /* =========================================================
    KI ANALYSE
@@ -746,10 +830,14 @@ function loadGame() {
             gameData.score = Number(parsed.score) || 0;
             gameData.total = Number(parsed.total) || 0;
             gameData.clouds = parsed.clouds || {};
+            gameData.questDate = parsed.questDate || "";
+            gameData.questCurrent = Number(parsed.questCurrent) || 0;
+            gameData.questCompleted = Boolean(parsed.questCompleted);
         }
     } catch(e) {
-        gameData = { score: 0, total: 0, clouds: {} };
+        gameData = { score: 0, total: 0, clouds: {}, questDate: "", questCurrent: 0, questCompleted: false };
     }
+    setupDailyQuest();
     updateDisplays();
 }
 
@@ -758,6 +846,7 @@ function updateDisplays() {
     document.getElementById("gameScore").textContent = gameData.score;
     document.getElementById("cloudsScore").textContent = gameData.score;
     document.getElementById("cloudsTotal").textContent = gameData.total;
+    updateQuestDisplay();
 
     const list = document.getElementById("cloudList");
     if (!list) return;
@@ -925,7 +1014,7 @@ async function processCapturedImage(imgElement) {
 }
 
 /* =========================================================
-   PHANTASIE-FORM AUSWÄHLEN
+   PHANTASIE-FORM AUSWÄHLEN & TAGESAUFGABE PRÜFEN
    ========================================================= */
 function chooseFantasy(type, label, bonus) {
     if (!pendingMatchedCloud) return;
@@ -933,7 +1022,21 @@ function chooseFantasy(type, label, bonus) {
     const matchedCloud = pendingMatchedCloud;
     const aiResult = pendingAiResult;
 
-    const totalPoints = matchedCloud.points + bonus;
+    let totalPoints = matchedCloud.points + bonus;
+    let questBonusText = "";
+
+    // Tagesaufgabe prüfen
+    if (activeQuest && !gameData.questCompleted && type === activeQuest.targetType) {
+        gameData.questCurrent += 1;
+        if (gameData.questCurrent >= activeQuest.count) {
+            gameData.questCompleted = true;
+            totalPoints += activeQuest.reward;
+            questBonusText = `<br>🎯 <b>Tagesaufgabe erfüllt!</b> +${activeQuest.reward} Extrapunkte`;
+        } else {
+            questBonusText = `<br>🎯 Tagesaufgabe Fortschritt: ${gameData.questCurrent} / ${activeQuest.count}`;
+        }
+    }
+
     gameData.score += totalPoints;
     gameData.total += 1;
     gameData.clouds[matchedCloud.id] = (gameData.clouds[matchedCloud.id] || 0) + 1;
@@ -945,7 +1048,7 @@ function chooseFantasy(type, label, bonus) {
     document.getElementById("resultName").textContent = "🎯 " + matchedCloud.name + " erkannt";
 
     let description = matchedCloud.description;
-    description += `<br><br>🔮 <b>Entdeckung:</b> ${label} (+${bonus} Punkte)`;
+    description += `<br><br>🔮 <b>Entdeckung:</b> ${label} (+${bonus} Punkte)${questBonusText}`;
     if (aiResult) {
         description += "<br>🤖 KI-Ergebnis: " + aiResult.label;
     }
